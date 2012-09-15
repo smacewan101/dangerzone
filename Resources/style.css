@@ -1,0 +1,41 @@
+/*http://colorschemedesigner.com/#0131Tw0w0w0w0*/
+body{
+	background-color: #A60400;
+	font-family: "Trebuchet MS", Helvetica, arial, sans-serif;
+	font-size: 12px;
+	color: #5DC8Cd;
+}
+#navigation{
+	background-color: #000000;
+	width: 100%;
+	
+}
+#leftArea{
+	float:left;
+}
+#rightArea{
+	float:right;
+}
+ul.nav{
+	margin-right: auto;
+	margin-left: auto;
+	text-align: center;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+ul.nav li{
+	margin: 0;
+	padding: 0;
+	background-color: #34C6CD;
+	list-style: none;
+	font-size: 14px;
+	font-weight: bolder;
+	text-decoration: none;
+	display: inline-block;
+	min-width: 20%;
+
+}
+ul.nav li:hover{
+	background-color: #006064;
+}
