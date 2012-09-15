@@ -3,6 +3,7 @@
 <?php
 	//Grabbing some important configutaration info so transfering to server is easy
 	require_once('config.php');
+	require_once(DOCROOT.'Model/TwitterFeed.php');
 ?>
 <html>
 
@@ -13,11 +14,17 @@
 
 	<body>
 		<!-- Get the Header and Navigation -->
-		<!-- Top Bar Navigation will be good I think -->
-		<div id="navigation">
-			<?php
-				include('/View/navigation.php');
-			?>
+		<div id="header">
+			<div class="spacer"></div>
+			<h1 id="archer">YOU'RE IN THE DANGER ZONE</h1>
+			<!-- Top Bar Navigation will be good I think -->
+			<div class="spacer"></div>
+			<div id="navigation">
+				<?php
+					include('/View/navigation.php');
+				?>
+			</div>
+
 		</div>
 
 		<!--Get the Feeds and display them in the box -->
@@ -26,7 +33,7 @@
 
 
 			?>
-			hi
+			asfljaksfjsdklgjsdg
 		</div>
 
 		<!-- Figure out what page we're grabbing via the URL -->
@@ -37,5 +44,9 @@
 			hi
 		</div>
 
+		<!-- Footer Will Just be A little cute thing-->
+		<div id="kenny">
+			<h1>Ever wonder if Kenny Logins is around the corner? You best call him, because you're in: The Danger Zone</h1>
+		</div>
 	</body>
 </html>

@@ -5,15 +5,15 @@
 ?>
 <ul class="nav">
 		<li>
-			<?php echo '<a href="'.DOCROOT.'" >Home</a>'; ?>
+			<?php echo '<a href="'.DOCROOT.'" class="nav">Home</a>'; ?>
 		</li>
 		<li>
-			<?php echo '<a href="'.DOCROOT.'/View/API/">API Documentation</a>'; ?>
+			<?php echo '<a href="'.DOCROOT.'View/API/" class="nav">API Documentation</a>'; ?>
 		</li>
 		<li>
-			<?php echo '<a href="'.DOCROOT.'/View/Contact.php">Contact Us</a>'; ?>
+			<?php echo '<a href="'.DOCROOT.'View/Contact.php" class="nav">Contact Us</a>'; ?>
 		</li>
 		<li>
-			<?php echo '<a href="'.DOCROOT.'/View/Team.php">The Team</a>'; ?>
+			<?php echo '<a href="'.DOCROOT.'View/Team.php" class="nav">The Team</a>'; ?>
 		</li>
 </ul>
