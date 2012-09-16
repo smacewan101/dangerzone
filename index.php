@@ -3,7 +3,8 @@
 <?php
 	//Grabbing some important configutaration info so transfering to server is easy
 	require_once('config.php');
-	require_once(DOCROOT.'Model/TwitterFeed.php');
+	require_once('..'.DOCROOT .'Model/TwitterFeed.php');
+	require_once('..'.DOCROOT.'View/TwitterView.php');
 ?>
 <html>
 
@@ -16,7 +17,7 @@
 		<!-- Get the Header and Navigation -->
 		<div id="header">
 			<div class="spacer"></div>
-			<h1 id="archer">YOU'RE IN THE DANGER ZONE</h1>
+			<h1 id="archer">WELCOME TO THE DANGER ZONE</h1>
 			<!-- Top Bar Navigation will be good I think -->
 			<div class="spacer"></div>
 			<div id="navigation">
@@ -29,11 +30,26 @@
 
 		<!--Get the Feeds and display them in the box -->
 		<div id="leftArea">
-			<?php
+			<div>
+				<!--Twitter Feed -->
+				<div id="twitter">
+					<h3 id="twitHead"><a href="https://twitter.com/TheDangerZone3" id="TwitterLink">Danger Zone Twitter Feed</a></h3>
+						<?php
+							//Render the Twitter Feed First
+							$twitter = new TwitterFeed();
+							new TwitterView($twitter->getData());
+						?>
+				</div>
+				<hr>
+				<!-- GitHub RSS Feed-->
+				<div id="github">
+					<h3 id="gitHead">Danger Zone GitHub Feed</h3>
+						<?php 
+							//Render the GitHub Feed
 
-
-			?>
-			asfljaksfjsdklgjsdg
+						?>
+				</div>
+			</div>
 		</div>
 
 		<!-- Figure out what page we're grabbing via the URL -->

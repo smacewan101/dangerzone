@@ -99,3 +99,44 @@ a.nav:hover{
 	color: #34C6CD;
 	
 }
+#twitter{
+	color: #000000;
+	background-color: #BF3030;
+	width: 100%;
+	height: 50%;
+	border: 2px #060400 solid;
+	padding: 5px;
+	overflow: auto;
+	position: relative;
+}
+#twitHead{
+	color: #9FEE00;
+}
+#tweetrule{
+	text-align: center;
+	width: 80%;
+	border: 2px #9FEE00 dashed;
+	margin-right: auto;
+	margin-left: auto;
+}
+#TwitterLink{
+	color: #9FEE00;
+	text-decoration: none;
+	display: block;;
+	width: 100%;
+}
+#github{
+	color: #000000;
+	background-color: #FF4040;
+	width: 100%;
+	height: 50%;
+	border: 2px #060400 solid;
+	padding: 5px;
+	overflow: auto;
+	position: relative;	
+}
+#gitHead{
+	color: #1D7373;
+	text-decoration: none;
+	width: 100%;
+}
