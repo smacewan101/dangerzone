@@ -4,7 +4,9 @@
 	//Grabbing some important configutaration info so transfering to server is easy
 	require_once('config.php');
 	require_once('..'.DOCROOT .'Model/TwitterFeed.php');
+	require_once('..'.DOCROOT .'Model/GithubFeed.php');
 	require_once('..'.DOCROOT.'View/TwitterView.php');
+	require_once('..'.DOCROOT.'View/GitHubView.php');
 ?>
 <html>
 
@@ -46,6 +48,8 @@
 					<h3 id="gitHead">Danger Zone GitHub Feed</h3>
 						<?php 
 							//Render the GitHub Feed
+							$hub = new  GithubFeed();
+							new GitHubView($hub->getData());
 
 						?>
 				</div>
