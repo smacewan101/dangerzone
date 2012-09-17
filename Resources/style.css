@@ -35,6 +35,7 @@ body{
 	padding-bottom: 10px;
 	padding-top: 10px;
 }
+/*
 #kenny{
 	color: #000000;
 	background-color: #34C6CD;
@@ -49,17 +50,21 @@ body{
 	height: 20px;
 	margin-bottom: 2px;
 }
+*/
 #navigation{
 	background-color: #000000;
 	width: 100%;
 }
 #leftArea{
+	padding-top: 10px;
 	margin-left: 1%;
 	float:left;
-	background-color: #000000;
+	padding-right: 5%;
+	min-height: 100%;
+	width: 25%;
 }
 #rightArea{
-	float:right;
+	
 	margin-right: 1%;
 	background-color: #233433;
 	border: 1px solid black;
@@ -139,4 +144,34 @@ a.nav:hover{
 	color: #1D7373;
 	text-decoration: none;
 	width: 100%;
+}
+#gitRule{
+	text-align: center;
+	width: 80%;
+	border: 2px #1D7373 dashed;
+	margin-right: auto;
+	margin-left: auto;
+}
+p.GitCommit{
+	font-weight: bold;
+	color: #1D7074;
+	font-size: 10px;
+	text-decoration: underline;
+}
+span.GitContent{
+	font-size: 9px;
+	font-weight: normal;
+	font-family: "Trebuchet MS", Helvetica, arial, sans-serif;
+	display: none;
+}
+#GitMit{
+	color: #000000;
+}
+#GitMit:Hover{
+	color: #FFFFFF;
+}
+#gitInfo{
+	font-size: 10px;
+	font-style: italic;
+	color: #FFFFFF;
 }
