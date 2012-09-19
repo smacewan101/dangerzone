@@ -1,6 +1,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <?php
+	//Index Page for the API folder
+	//This guy is going to help control all the requests for the content.
+	//Basic set up is the twitter/github stuff on the left like the original index page
+	//Then the url will be analyzed, API/page, and we'll attempt to include that page
+	//So this pages job is to provide the general structure of the page
+	//Its Controller will handle parsing the url and figuring out what the user wants
+	//the controller will pass out data (the page name) to the constructor of the view
+	//And then poof we'll have the page
+
+
 	//Grabbing some important configutaration info so transfering to server is easy
 	require_once('config.php');
 	require_once('..'.DOCROOT .'Model/TwitterFeed.php');
@@ -77,7 +87,9 @@
 		<!-- Figure out what page we're grabbing via the URL -->
 		<div id="rightArea">
 			<?php
-			
+				//Make the Controller for the API 
+
+				//Render the view
 			?>
 			<p>
 			</p>

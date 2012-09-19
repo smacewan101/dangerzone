@@ -1,7 +1,7 @@
 <?php 
 class TwitterFeed{
 	//https://twitter.com/statuses/user_timeline/thedangerzone3.xml?count=5
-	public $feedToParse = "TheDangerZone3";
+	public $feedToParse = "thedangerzone3";
 	
 	public function __construct(){}
 
