@@ -5,13 +5,14 @@ class APIPage{
 
 	public function __construct($page){
 		$this->page = $page;	
+		$this->render();
 	}
 
 	public function render(){
-		if($page = "" || $page = null){
+		if($this->page == "" || $this->page == null){
 			include "../View/API/Home.php";
 		}else{
-			include "../View/API/".$page;
+			include "../View/API/".$this->page;
 		}
 	}
 

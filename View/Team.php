@@ -12,13 +12,11 @@
 
 
 	//Grabbing some important configutaration info so transfering to server is easy
-	require_once('../../config.php');
-	require_once('../../..'.DOCROOT . 'Model/TwitterFeed.php');
-	require_once('../../..'.DOCROOT .'Model/GithubFeed.php');
-	require_once('../../..'.DOCROOT.'View/TwitterView.php');
-	require_once('../../..'.DOCROOT.'View/GitHubView.php');
-	require_once('../../..'.DOCROOT.'Controller/APIControl.php');
-	require_once('../../..'.DOCROOT.'Model/APIPage.php');
+	require_once('../config.php');
+	require_once('../..'.DOCROOT . 'Model/TwitterFeed.php');
+	require_once('../..'.DOCROOT .'Model/GithubFeed.php');
+	require_once('../..'.DOCROOT.'View/TwitterView.php');
+	require_once('../..'.DOCROOT.'View/GitHubView.php');
 ?>
 <html>
 
@@ -53,7 +51,7 @@
 			<div class="spacer"></div>
 			<div id="navigation">
 				<?php
-					include('../../..'.DOCROOT.'View/navigation.php');
+					include('../..'.DOCROOT.'View/navigation.php');
 				?>
 			</div>
 
@@ -89,15 +87,19 @@
 		<!-- Figure out what page we're grabbing via the URL -->
 		<div id="rightArea">
 			<p>
-			<?php
-				//Make the control for the API 
-				$API = new APIControl($_SERVER['REQUEST_URI']);
-				var_dump($API->getPage());
-				//The model for the API will get us the view
-				new APIPage($API->getPage());
-				//HT Access should direct all page requests in the API directory to the index
-
-			?>
+				<ul>
+					<?php
+						//Lets get some team going!
+						//We can have little profile boxes in a table with each members name and such
+						//Maybe we can have a little blurb stored in a database if we really want to.
+						$team  = array('Rick Belford','Scott Connor','Colin Dewitt','Ashraf Eassa','Ethan Eldridge','Garth Fritz','Patrick Glennon','Scott MacEwan','Chris Morse','Samuel Ogden','Mike Sullivan','Dillan Wilding' );
+						//If there were images in a magic place I would use them here
+						foreach ($team as $member) {
+							echo '<li>'.$member.'</li>';
+						}
+						
+					?>
+				</ul>
 			</p>
 		</div>
 

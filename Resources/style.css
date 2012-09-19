@@ -66,8 +66,10 @@ body{
 }
 #rightArea{
 	margin-right: 1%;
+	margin-left: 1%;
 	background-color: #233433;
 	border: 1px solid black;
+	min-height: 400px;
 	
 }
 ul.nav{
