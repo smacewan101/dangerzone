@@ -12,11 +12,13 @@
 
 
 	//Grabbing some important configutaration info so transfering to server is easy
-	require_once('config.php');
-	require_once('..'.DOCROOT .'Model/TwitterFeed.php');
-	require_once('..'.DOCROOT .'Model/GithubFeed.php');
-	require_once('..'.DOCROOT.'View/TwitterView.php');
-	require_once('..'.DOCROOT.'View/GitHubView.php');
+	require_once('../../config.php');
+	require_once('../../..'.DOCROOT . 'Model/TwitterFeed.php');
+	require_once('../../..'.DOCROOT .'Model/GithubFeed.php');
+	require_once('../../..'.DOCROOT.'View/TwitterView.php');
+	require_once('../../..'.DOCROOT.'View/GitHubView.php');
+	require_once('../../..'.DOCROOT.'Controller/APIControl.php');
+	require_once('../../..'.DOCROOT.'Model/APIPage.php');
 ?>
 <html>
 
@@ -51,7 +53,7 @@
 			<div class="spacer"></div>
 			<div id="navigation">
 				<?php
-					include('/View/navigation.php');
+					include('../../..'.DOCROOT.'View/navigation.php');
 				?>
 			</div>
 
@@ -86,12 +88,16 @@
 
 		<!-- Figure out what page we're grabbing via the URL -->
 		<div id="rightArea">
-			<?php
-				//Make the Controller for the API 
-
-				//Render the view
-			?>
 			<p>
+			<?php
+				//Make the model for the API 
+				$API = new APIControl();
+				//Render the view
+				//var_dump($API->getPage());
+				var_dump(explode('/', 	$_SERVER['REQUEST_URI']));
+				$thisPage = new APIPage($API->getPage());
+				$thisPage->render();
+			?>
 			</p>
 		</div>
 

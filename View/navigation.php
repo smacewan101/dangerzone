@@ -1,7 +1,7 @@
 <!-- Navigation Bar for the Site-->
 <?php
 	//Grabbing some important configutaration info so transfering to server is easy
-	require_once('config.php');
+	
 ?>
 <ul class="nav">
 		<li>
