@@ -4,7 +4,7 @@
 class APIControl{
 	public $page = null;
 
-	public function _construct($requestURI){
+	public function __construct($requestURI){
 		//Grab the url from the server
 		$url = explode('/',$requestURI);
 

@@ -10,9 +10,9 @@ class APIPage{
 
 	public function render(){
 		if($this->page == "" || $this->page == null){
-			include "../View/API/Home.php";
+			include "../../View/API/Home.php";
 		}else{
-			include "../View/API/".$this->page;
+			include "../../View/API/".$this->page;
 		}
 	}
 

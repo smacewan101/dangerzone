@@ -92,7 +92,6 @@
 			<?php
 				//Make the control for the API 
 				$API = new APIControl($_SERVER['REQUEST_URI']);
-				var_dump($API->getPage());
 				//The model for the API will get us the view
 				new APIPage($API->getPage());
 				//HT Access should direct all page requests in the API directory to the index
