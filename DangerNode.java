@@ -12,6 +12,17 @@ class DangerNode{
 	private float[] coordinates = new float[2];
 
 	/**
+	*Creates an instance of the DangerNode.
+	*@param longitude The longitude coordinate of the danger zone associated with id
+	*@param latitude The latitude coordinate of the danger zone associated with id
+	*@param id The integer id for the database entry associated with the danger zone
+	*@return the created object instance of DangerNode
+	*/
+	public DangerNode(float longitude,float latitude, int id){
+		this(longitude,latitude,id,null,null);
+	}
+
+	/**
 	*Creates an instance of the DangerNode. Nulls may be passed for lChild and rChild if there are no children to this node
 	*@param longitude The longitude coordinate of the danger zone associated with id
 	*@param latitude The latitude coordinate of the danger zone associated with id
@@ -64,20 +75,16 @@ class DangerNode{
 	private DangerNode innerSearch(float[] searchTuple, int depth){
 		//Check for match
 		if(coordinates[(depth % coordinates.length)] == searchTuple[depth % searchTuple.length]){
-			System.out.println("partial match on depth" + depth);
 			if(coordinates[(depth +1)% coordinates.length] == searchTuple[(depth +1)% searchTuple.length]){
-					System.out.println("Total match");
 					return this;
 			}
 		}
 		//To the left, to the left...
 		if(coordinates[depth % coordinates.length] < searchTuple[depth % searchTuple.length]){
-			System.out.println("Traversing left");
 			if(this.left != null){
 				return this.left.innerSearch(searchTuple,depth+1);
 			}
 		}else{
-			System.out.println("Traversing right");
 			if(this.right != null){
 				return this.right.innerSearch(searchTuple,depth+1);
 			}
@@ -94,10 +101,19 @@ class DangerNode{
 		return coordinates[index];
 	}
 
+	/**
+	*Adds a node to the K-d Tree
+	*@param newNode The node to be added.
+	*/
 	public void addNode(DangerNode newNode){
 		this.innerAddNode(newNode, 1);
 	}
 
+	/**
+	*Private helping function for adding a node, required to sort properly on the depth without exposing to user
+	*@param newNode the node to be added
+	*@param depth The depth of the current node we're on. Used for sorting by an axis
+	*/
 	public void innerAddNode(DangerNode newNode, int depth){
 		if(coordinates[depth % coordinates.length] < newNode.getCoordinate(depth % coordinates.length)){
 			if(this.left != null){
