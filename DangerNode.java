@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 * a timestamp identified with the time the Danger Zone took place or was entered into the database. The Node is sorted by longitude and
 * latitude which are stored in the coordinates array in their respective order.
 */
-class DangerNode{
+public class DangerNode{
 	/**
 	*Identifier corresponding to an integer database key.
 	*/
@@ -155,9 +155,9 @@ class DangerNode{
 	//Test function
 	public static void main(String argv[]) throws Exception
 	{
-		DangerNode p = new DangerNode(1,1,1,null,null);
-		p.addNode(new DangerNode(0,1,1,null,null));
-		p.addNode(new DangerNode(3,3,3,null,null));
+		DangerNode p = new DangerNode(1,1,1);
+		p.addNode(new DangerNode(0,1,2));
+		p.addNode(new DangerNode(3,3,3));
 		float [] s = new float[2];
 		s[0] = 1;
 		s[1] = 1;

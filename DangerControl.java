@@ -1,16 +1,18 @@
 package danger_zone;
-/**
-*@author Ethan Eldridge <ejayeldridge @ gmail.com>
-*@version 0.0
-*@since 2012-10-2
-*KD Tree / Listening Object Interface for the danger zone application.
-*Provides a wrapper for an interface to the all important Danger Zone K-d(2) Tree
-*/
 import java.io.*;
 import java.net.*;
 import java.util.Timer;
 
-class DangerControl{
+
+/**
+*@author Ethan Eldridge <ejayeldridge @ gmail.com>
+*@version 0.0
+*@since 2012-10-2
+*
+* KD Tree / Listening Object Interface for the danger zone application.
+* Provides a wrapper for an interface to the all important Danger Zone K-d(2) Tree
+*/
+public class DangerControl{
 	
 	public static void main(String argv[]) throws Exception
 	{
