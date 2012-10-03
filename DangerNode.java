@@ -123,11 +123,35 @@ public class DangerNode{
 	}
 
 	/**
+	*Returns the longitude of this DangerNode
+	*@return The longitude of this DangerNode
+	*/
+	public float getLongitude(){
+		return coordinates[0];
+	}
+
+	/**
+	*Returns the latitude of this DangerNode
+	*@return the latitude of this DangerNode
+	*/
+	public float getLatitude(){
+		return coordinates[1];
+	}
+
+	/**
 	*Adds a node to the K-d Tree
 	*@param newNode The node to be added.
 	*/
 	public void addNode(DangerNode newNode){
 		this.innerAddNode(newNode, 1);
+	}
+
+	/**
+	*Returns the database identifier associated with this DangerNode
+	*@return The database id for this DangerNode
+	*/
+	public int getID(){
+		return id;
 	}
 
 	/**
@@ -149,6 +173,14 @@ public class DangerNode{
 				this.right = newNode;
 			}
 		}
+	}
+
+	/**
+	*Nearest neighbor search on this DangerNode. 
+	*@param searchTuple The tuple we'd like to find neighbors for.
+	*/
+	public ArrayList<DangerNode> nearestNeighbor(float[] searchTuple){
+		return null;
 	}
 
 
