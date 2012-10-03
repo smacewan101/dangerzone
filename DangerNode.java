@@ -1,18 +1,38 @@
-/**
-*Ethan Eldridge
-*
-*/
 import java.sql.Timestamp;
 
+/**
+*@author Ethan Eldridge <ejayeldridge @ gmail.com>
+*@version 0.0
+*@since 2012-10-2
+*
+* The DangerNode class is a node of a K-d Tree of dimensionality 2. It contains an id for reference to an outside database as well as
+* a timestamp identified with the time the Danger Zone took place or was entered into the database. The Node is sorted by longitude and
+* latitude which are stored in the coordinates array in their respective order.
+*/
 class DangerNode{
+	/**
+	*Identifier corresponding to an integer database key.
+	*/
 	private int id;
+	/**
+	*Time the DangerNode took place at
+	*/
 	private Timestamp timestamp;
+	/**
+	*Left child of this node
+	*/
 	private DangerNode left = null;
+	/**
+	*Right child of this node
+	*/
 	private DangerNode right = null;
+	/**
+	*Tuple for holding the longitude and latitude of the Danger Zone referenced by id. Indicies to the array correspond to 0 => longitude and 1=> latitude
+	*/
 	private float[] coordinates = new float[2];
 
 	/**
-	*Creates an instance of the DangerNode.
+	*Creates an instance of the DangerNode.g
 	*@param longitude The longitude coordinate of the danger zone associated with id
 	*@param latitude The latitude coordinate of the danger zone associated with id
 	*@param id The integer id for the database entry associated with the danger zone
