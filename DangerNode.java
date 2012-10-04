@@ -189,12 +189,10 @@ public class DangerNode{
 	public Stack<DangerNode> nearestNeighbor(float[] searchTuple,int numOfNeighbors){
 		//ArrayList of DangerNodes or id's?
 		Stack<DangerNode> neighborNodes = new Stack<DangerNode>();
-		neighborNodes =  this.innerNN(searchTuple,2,neighborNodes);
+		neighborNodes =  this.innerNN(searchTuple,0,neighborNodes);
 		Stack<DangerNode> returnNeighbors = new Stack<DangerNode>();
-		for(; numOfNeighbors > 0; numOfNeighbors--){
-			if(!neighborNodes.empty()){
-				returnNeighbors.push(neighborNodes.pop());
-			}
+		for(; numOfNeighbors > 0 && !neighborNodes.empty(); numOfNeighbors--){
+			returnNeighbors.push(neighborNodes.pop());
 		}
 		return returnNeighbors;
 	}
@@ -215,8 +213,6 @@ public class DangerNode{
 		while(curNode != null){
 			treeStack.push(curNode);
 			if(curNode.getCoordinate(depth % coordinates.length) > searchTuple[depth % searchTuple.length]){
-				System.out.println("Traverse Left");
-				System.out.println(curNode);
 				if(curNode.left != null){
 					curNode = curNode.left;
 				}else{
@@ -224,10 +220,8 @@ public class DangerNode{
 					curNode = null;
 				}
 			}else{
-				System.out.println("Traverse Right");
-				System.out.println(curNode);
 				if(curNode.right != null){
-					curNode = curNode.left;
+					curNode = curNode.right;
 				}else{
 					curNode = null;
 				}
@@ -236,14 +230,14 @@ public class DangerNode{
 		}
 
 		//Now unwind our 'recursion' checking children along the way up for better distances
-		DangerNode searchNode = new DangerNode(searchTuple[0],searchTuple[1],-1);
+		final DangerNode searchNode = new DangerNode(searchTuple[0],searchTuple[1],-1);
 		float currentBest = treeStack.peek().euDistance(searchNode);
 		bests.push(treeStack.peek());
-		while(!treeStack.empty()){
-			System.out.println(currentBest);
+		while(depth != 0){
 			curNode = treeStack.pop();
 			//Check if this node is better
-			if(currentBest > curNode.euDistance(searchNode)){
+			System.out.println(curNode.euDistance(searchNode));
+			if(curNode.euDistance(searchNode) < currentBest){
 				currentBest = curNode.euDistance(searchNode);
 				bests.push(curNode);
 				//Check its child to see if we need to expand the search to the other branch of the tree
@@ -264,7 +258,6 @@ public class DangerNode{
 			depth--;
 		}
 		//Now we have a Stack of the best nodes we found. 
-
 		return bests;
 	}
 
@@ -345,6 +338,10 @@ public class DangerNode{
 	public DangerNode innerBalance(ArrayList<DangerNode> nodes,int depth){
 		//if the list is empty then we can just ignore it
 		if(nodes.isEmpty()){return null;}
+		System.out.println(depth);
+		for(int i = 0; i < nodes.size(); i ++){
+			System.out.println(nodes.get(i));
+		}
 
 		//Sort the list of points by the axis
 		final int axis = depth % coordinates.length;
@@ -364,8 +361,9 @@ public class DangerNode{
 		int median = (int)Math.floor((double)nodes.size() / 2);
 
 		//Create Node
-		DangerNode node = nodes.get(median);
 
+		DangerNode node = nodes.get(median);
+		System.out.println("ROOT " +node);
 
 		//Split the list into two pieces by median
 		ArrayList<DangerNode> partialList = new ArrayList<DangerNode>();
@@ -387,21 +385,19 @@ public class DangerNode{
 	//Test function
 	public static void main(String argv[]) throws Exception
 	{
-		DangerNode p = new DangerNode(7,2,1);
+		DangerNode p = new DangerNode(9,9,1);
 		//(2,3), (5,4), (9,6), (4,7), (8,1), (7,2).
-		p.addNode(new DangerNode(2,3,4));
-		p.addNode(new DangerNode(5,4,5));
-		p.addNode(new DangerNode(9,6,6));
-		p.addNode(new DangerNode(4,7,7));
-		p.addNode(new DangerNode(8,1,8));
+		p.addNode(new DangerNode(7,2,4));
+		p.addNode(new DangerNode(12,12,5));
+		p.addNode(new DangerNode(15,13,6));
 		p.printTree();
-		p.reBalanceTree(p);
+		p= p.reBalanceTree(p);
 		p.printTree();
 		float [] s = new float[2];
-		System.out.println("Nearest Neighbor Search on 0,0");
-		s[0] = 0;
-		s[1] = 0;
-		System.out.println(p.nearestNeighbor(s,1));
+		System.out.println("Nearest Neighbor Search on 13,9");
+		s[0] = 13;
+		s[1] = 9;
+		System.out.println(p.nearestNeighbor(s,3).size());
 	}	
 
 }
