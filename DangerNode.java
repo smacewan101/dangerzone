@@ -336,13 +336,16 @@ public class DangerNode{
 	static final public DangerNode reBalanceTree(DangerNode root){
 		//Get whole tree into a single list
 		ArrayList<DangerNode> list = root.getList(new ArrayList<DangerNode>());
-		return root.innerBalance(list,0);
+		return root.innerBalance(list,2);
 	}
 
 	/**
 	*Helper function to create balance tree
 	*/
 	public DangerNode innerBalance(ArrayList<DangerNode> nodes,int depth){
+		//if the list is empty then we can just ignore it
+		if(nodes.isEmpty()){return null;}
+
 		//Sort the list of points by the axis
 		final int axis = depth % coordinates.length;
 		Collections.sort(nodes, new Comparator<DangerNode>(){
