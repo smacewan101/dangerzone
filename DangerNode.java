@@ -321,10 +321,10 @@ public class DangerNode{
 
 	private ArrayList<DangerNode> getList(ArrayList<DangerNode> list){
 		if(this.left != null){
-			return this.left.getList(list);
+			list =  this.left.getList(list);
 		}
 		if(this.right != null){
-			return this.right.getList(list);
+			list = this.right.getList(list);
 		}
 		list.add(this);
 		return list;
@@ -359,11 +359,13 @@ public class DangerNode{
 				}
 			}
 		});
+
 		//Choose a median point:
 		int median = (int)Math.floor((double)nodes.size() / 2);
 
 		//Create Node
 		DangerNode node = nodes.get(median);
+
 
 		//Split the list into two pieces by median
 		ArrayList<DangerNode> partialList = new ArrayList<DangerNode>();
@@ -393,7 +395,7 @@ public class DangerNode{
 		p.addNode(new DangerNode(4,7,7));
 		p.addNode(new DangerNode(8,1,8));
 		p.printTree();
-		DangerNode.reBalanceTree(p);
+		p.reBalanceTree(p);
 		p.printTree();
 		float [] s = new float[2];
 		System.out.println("Nearest Neighbor Search on 0,0");
