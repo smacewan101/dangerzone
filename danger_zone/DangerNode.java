@@ -1,4 +1,4 @@
-//package danger_zone;
+package danger_zone;
 import java.sql.Timestamp;
 import java.util.Stack;
 import java.util.ArrayList;
@@ -42,7 +42,6 @@ public class DangerNode{
 	*@param longitude The longitude coordinate of the danger zone associated with id
 	*@param latitude The latitude coordinate of the danger zone associated with id
 	*@param id The integer id for the database entry associated with the danger zone
-	*@return the created object instance of DangerNode
 	*/
 	public DangerNode(float longitude,float latitude, int id){
 		this(longitude,latitude,id,null,null);
@@ -55,7 +54,6 @@ public class DangerNode{
 	*@param id The integer id for the database entry associated with the danger zone
 	*@param lChild the left child of the DangerNode
 	*@param rChild the right child of the DangerNode
-	*@return the created object instance of DangerNode
 	*/
 	public DangerNode(float longitude,float latitude,int id,DangerNode lChild,DangerNode rChild){
 		this.id = id;
@@ -75,7 +73,6 @@ public class DangerNode{
 	*@param lChild the left child of the DangerNode
 	*@param rChild the right child of the DangerNode
 	*@param tStamp Timestamp in SQL Format
-	*@return the created object instance of DangerNode
 	*/
 	public DangerNode(float longitude,float latitude,int id,DangerNode lChild, DangerNode rChild, java.sql.Timestamp tStamp){
 		this(longitude,latitude,id,lChild,rChild);
@@ -183,7 +180,7 @@ public class DangerNode{
 	/**
 	*Nearest neighbor search on this DangerNode. Returns up to numOfNeighbors neighbors. 
 	*@param searchTuple The tuple we'd like to find neighbors for.
-	*@int numOfNeighbors How many neighbors one would like maximum from the tree, the function will not neccesary return this number of nodes
+	*@param numOfNeighbors How many neighbors one would like maximum from the tree, the function will not neccesary return this number of nodes
 	*@return Returns a Stack of DangerNodes of nearest neighbors to the searchTuple
 	*/
 	public Stack<DangerNode> nearestNeighbor(float[] searchTuple,int numOfNeighbors){
@@ -387,12 +384,14 @@ public class DangerNode{
 	//Test function
 	public static void main(String argv[]) throws Exception
 	{
+		System.out.println("Creating Tree");
 		DangerNode p = new DangerNode(9,9,1);
 		//(2,3), (5,4), (9,6), (4,7), (8,1), (7,2).
 		p.addNode(new DangerNode(7,2,4));
 		p.addNode(new DangerNode(12,12,5));
 		p.addNode(new DangerNode(15,13,6));
 		p.printTree();
+		System.out.println("Re-Balancing Tree");
 		p= p.reBalanceTree(p);
 		p.printTree();
 		float [] s = new float[2];
@@ -400,7 +399,7 @@ public class DangerNode{
 		s[0] = 13;
 		s[1] = 9;
 		Stack<DangerNode> bests = p.nearestNeighbor(s,2);
-		System.out.println(bests.pop() +"\n" + bests.pop());
+		System.out.println("Bests: \n"+ bests.pop() +"\n" + bests.pop());
 	}	
 
 }
