@@ -190,11 +190,10 @@ public class DangerNode{
 		//ArrayList of DangerNodes or id's?
 		Stack<DangerNode> neighborNodes = new Stack<DangerNode>();
 		neighborNodes =  this.innerNN(searchTuple,0,neighborNodes);
-		Stack<DangerNode> returnNeighbors = new Stack<DangerNode>();
-		for(; numOfNeighbors > 0 && !neighborNodes.empty(); numOfNeighbors--){
-			returnNeighbors.push(neighborNodes.pop());
+		if(neighborNodes.size() > numOfNeighbors){
+			neighborNodes.setSize(numOfNeighbors);
 		}
-		return returnNeighbors;
+		return neighborNodes;
 	}
 
 	/**
@@ -236,7 +235,6 @@ public class DangerNode{
 		while(depth != 0){
 			curNode = treeStack.pop();
 			//Check if this node is better
-			System.out.println(curNode.euDistance(searchNode));
 			if(curNode.euDistance(searchNode) < currentBest){
 				currentBest = curNode.euDistance(searchNode);
 				bests.push(curNode);
@@ -312,6 +310,11 @@ public class DangerNode{
 		System.out.println("(" + getLongitude() + "," + getLatitude() +")");
 	}
 
+	/**
+	*Gets the K-d Tree in the form of an ArrayList
+	*@param list The current list of nodes being built
+	*@return The k-d tree in an ArrayList
+	*/
 	private ArrayList<DangerNode> getList(ArrayList<DangerNode> list){
 		if(this.left != null){
 			list =  this.left.getList(list);
@@ -324,24 +327,25 @@ public class DangerNode{
 	}
 
 	/**
-	*
+	*Balances the k-d Tree by reconstructing the entire tree
+	*@param root The root of the tree to reconstruct
+	*@return The root of the newly balanced tree.
 	*/
 	static final public DangerNode reBalanceTree(DangerNode root){
 		//Get whole tree into a single list
 		ArrayList<DangerNode> list = root.getList(new ArrayList<DangerNode>());
-		return root.innerBalance(list,2);
+		return root.innerBalance(list,0);
 	}
 
 	/**
 	*Helper function to create balance tree
+	*@param nodes The list of nodes to be used in constructing the balanced tree.
+	*@param depth The current depth of recursion
+	*@return The root of the newly balanced tree.
 	*/
-	public DangerNode innerBalance(ArrayList<DangerNode> nodes,int depth){
+	final private DangerNode innerBalance(ArrayList<DangerNode> nodes,int depth){
 		//if the list is empty then we can just ignore it
 		if(nodes.isEmpty()){return null;}
-		System.out.println(depth);
-		for(int i = 0; i < nodes.size(); i ++){
-			System.out.println(nodes.get(i));
-		}
 
 		//Sort the list of points by the axis
 		final int axis = depth % coordinates.length;
@@ -361,9 +365,7 @@ public class DangerNode{
 		int median = (int)Math.floor((double)nodes.size() / 2);
 
 		//Create Node
-
 		DangerNode node = nodes.get(median);
-		System.out.println("ROOT " +node);
 
 		//Split the list into two pieces by median
 		ArrayList<DangerNode> partialList = new ArrayList<DangerNode>();
@@ -397,7 +399,8 @@ public class DangerNode{
 		System.out.println("Nearest Neighbor Search on 13,9");
 		s[0] = 13;
 		s[1] = 9;
-		System.out.println(p.nearestNeighbor(s,3).size());
+		Stack<DangerNode> bests = p.nearestNeighbor(s,2);
+		System.out.println(bests.pop() +"\n" + bests.pop());
 	}	
 
 }
