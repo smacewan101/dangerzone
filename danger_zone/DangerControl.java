@@ -43,22 +43,7 @@ public class DangerControl{
 			String msg;
 
 			while((msg = info.readLine()) != null){
-				//Say it recieved it
-				try{
-					//Set to 5480 for testing so we'll just send back to ourselves
-					System.out.println(msg);
-					response = new Socket("127.0.0.1",5481);
-					out = new PrintWriter(response.getOutputStream(), true);
-					out.println("Hey you I'm a server rawr");
-					out.close();
-				}catch(java.net.ConnectException e){
-					System.err.println("Failed to open connection to php to send back data");
-					System.err.println(e.getMessage());
-					out.close();
-					info.close();
-					incoming.close();
-					System.exit(1);
-				}
+				//Parse information from the message:
 			}
 
 			incoming.close();
