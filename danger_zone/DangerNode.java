@@ -227,23 +227,23 @@ public class DangerNode{
 
 		//Now unwind our 'recursion' checking children along the way up for better distances
 		final DangerNode searchNode = new DangerNode(searchTuple[0],searchTuple[1],-1);
-		float currentBest = treeStack.peek().euDistance(searchNode);
+		float currentBest = treeStack.peek().sqDistance(searchNode);
 		bests.push(treeStack.peek());
 		while(depth != 0){
 			curNode = treeStack.pop();
 			//Check if this node is better
-			if(curNode.euDistance(searchNode) < currentBest){
-				currentBest = curNode.euDistance(searchNode);
+			if(curNode.sqDistance(searchNode) < currentBest){
+				currentBest = curNode.sqDistance(searchNode);
 				bests.push(curNode);
 				//Check its child to see if we need to expand the search to the other branch of the tree
 				if(curNode.left != null){
-					if(curNode.euDistance(curNode.left) < currentBest){
+					if(curNode.sqDistance(curNode.left) < currentBest){
 						//Must search that tree
 						bests = curNode.left.innerNN(searchTuple,depth,bests);
 					}
 				}
 				if(curNode.right != null){
-					if(curNode.euDistance(curNode.right) < currentBest){
+					if(curNode.sqDistance(curNode.right) < currentBest){
 						//Must also search that
 						bests = curNode.right.innerNN(searchTuple,depth,bests);
 					}
@@ -261,7 +261,7 @@ public class DangerNode{
 	*@param other The node to compute the distance to
 	*@return The euclidean distance between the node and passed in and this one.
 	*/
-	public float euDistance(DangerNode other){
+	public float sqDistance(DangerNode other){
 		return square((getLatitude() - other.getLatitude())) + square(getLongitude() - other.getLongitude());
 	}
 

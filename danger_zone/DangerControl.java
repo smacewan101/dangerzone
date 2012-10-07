@@ -2,6 +2,7 @@ package danger_zone;
 import java.io.*;
 import java.net.*;
 import java.util.Timer;
+import java.util.Stack;
 
 
 /**
@@ -16,58 +17,107 @@ public class DangerControl{
 	/**
 	*Socket to accept incoming queries to the Danger Control interface, listens on port 5480
 	*/
-	ServerSocket listen = null;
+	ServerSocket clientListener = null;
+	/**
+	*Timeout for the DangerControl program itself, this is used during debugging and will probably be removed in release implementations
+	*/
+	long timeout = System.currentTimeMillis() + 1000*5;
+	/**
+	*Socket that will hold the incoming traffic coming from the clientListener
+	*/
+	Socket incoming = null;
+	/**
+	*Data Structure to hold the dangerZones from the database. 
+	*/
+	DangerNode dangerZones = null;
+
+	public DangerControl() throws Exception{
+		//5480 For Listening, 5481 to send back out
+		clientListener = new ServerSocket(5480);
+		//Construct the Tree to hold the danger zones (note this should be replaced by a tree building from sql function)
+		this.createTree();
+
+
+	}
+
+	public void createTree(){
+		dangerZones = new DangerNode(9,9,1);
+		dangerZones.addNode(new DangerNode(7,2,4));
+		dangerZones.addNode(new DangerNode(12,12,5));
+		dangerZones.addNode(new DangerNode(15,13,6));
+		dangerZones.reBalanceTree(dangerZones);
+	}
+
+	public void run() throws Exception{
+		//Fun Fact, Java supports labels. I didn't know Java liked Spaghetti
+		Running:
+		while(System.currentTimeMillis() < timeout){
+			//If we can't listen then just loop around
+			if(!this.listen()){ continue Running; }
+				this.read();
+		}
+		//Cleanup
+		System.out.print("done");
+		clientListener.close();
+	}
+
+	/**
+	*Opens the ServerSocket clientListener to accept incoming data
+	*@return Returns true if the socket is able to listen, false if otherwise.
+	*/
+	public boolean listen(){
+		try{
+			incoming = clientListener.accept();
+			return true;
+		}catch(IOException e){
+			return false;
+		}	
+	}
+
+	public void read() throws Exception{
+		//Read incoming messages with autoflushing printwriter
+		BufferedReader info = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
+		String msg;
+
+		
+		while((msg = info.readLine()) != null){
+			//We should use some type of switch or something to figure out what function to call from the command parser
+			if(msg.indexOf(CommandParser.CMD_LON) != -1 && msg.indexOf(CommandParser.CMD_LAT) != -1){
+				//Handle the command and respond to it
+				this.dispatchResponse(this.handleGeoCommand(msg));
+			}
+			//We can extend right here to implement more commands
+		}
+		//Close the incoming stream
+		incoming.close();
+		info.close();
+	}
+
+	public void dispatchResponse(Stack<DangerNode> neighbors){
+		System.out.println(neighbors);
+	}
+
+	public Stack<DangerNode> handleGeoCommand(String geoCommand){
+		float[] geoCmd = null;
+		//Parse information from the message:
+		geoCmd = CommandParser.parseGeoCommand(geoCommand);
+		if(geoCmd != null){
+			//We have recieved the Coordinates and should play with the tree
+			System.out.println("Searching tree for " + geoCmd[0] + " " + geoCmd[1]);
+			if(dangerZones == null){
+				System.out.println("No Tree Initailized");
+				return null;
+			}
+			return dangerZones.nearestNeighbor(new float[]{geoCmd[0],geoCmd[1]},(int)geoCmd[2]);
+
+		}
+		return null;
+}
 
 	public static void main(String argv[]) throws Exception
 	{
-		//5480 For Listening, 5481 to send back out
-		listen = new ServerSocket(5480);
-
-		//Time out for the server while I test so I don't have to kill it
-		//10 Seconds should be ok for now
-		long timeout = System.currentTimeMillis() + 1000*5;
-
-		//Socket to send back the data php must be listening to this or we will get an exception
-		Socket response = null;
-		
-		Socket incoming = null;
-		while(System.currentTimeMillis() < timeout){
-			//Attempt to listen for a client
-			try{
-				incoming = listen.accept();
-				System.out.println("Recieved");
-			}catch(IOException e){
-				System.out.println("Error");
-				continue;
-			}
-
-			//Read incoming messages with autoflushing printwriter
-			PrintWriter out = null;
-			BufferedReader info = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
-			String msg;
-
-			float[] geoCmd = null;
-			while((msg = info.readLine()) != null){
-				//Parse information from the message:
-				geoCmd = CommandParser.parseGeoCommand(msg);
-				if(geoCmd != null){
-					//We have recieved the Coordinates
-					System.out.println("OH HEY FUCKER I GOT THIS SHIT " + geoCmd[0] + " " + geoCmd[1]);
-				}
-
-			}
-			//Close the incoming stream
-			incoming.close();
-
-
-		}
-		listen.close();
-		System.out.print("done");
-
-
-
-		
-
+		DangerControl control = new DangerControl();		
+		control.run();
 
 	}
 

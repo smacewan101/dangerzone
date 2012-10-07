@@ -10,10 +10,10 @@ $timeout = 30;  //timeout in seconds
 $socket =  fsockopen($host,$hostport,$errNum);
 
 if($socket){
-	fwrite($socket,"LON 91.12 LAT 40.78");
+	fwrite($socket,"LON 91.12 LAT 40.78 NUM 3\n");
 	sleep(1);
 	$readsocket = fsockopen($host,$resultport,$errNum2);
-	if($){readsocket
+	if($readsocket){
 		echo $fread($readsocket,8192);
 		fclose($readsocket);
 	}else{

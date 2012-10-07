@@ -20,6 +20,10 @@ public class CommandParser{
 	*Constant for the latitude specifier in a GEO command
 	*/
 	static final String CMD_LAT = "LAT";
+	/**
+	*Constant for the number of nodes a query would like returned
+	*/
+	static final String CMD_COUNT = "NUM";
 
 	public static void main(String argv[]){
 		String cmd = "LON 91.12 LAT 40.78";
@@ -49,13 +53,23 @@ public class CommandParser{
 				//No bounds check because we should be sure of a well formed Geo Command here
 				cmds.put(CMD_LAT,Float.parseFloat(parts[i+1]));
 				continue;
+			}else if(parts[i].equals(CMD_COUNT)){
+				cmds.put(CMD_COUNT,Float.parseFloat(parts[i+1]));
+				continue;
 			}
 		}
 		//Now we 'hopefully' have what we'd like, in which case we should return it
-		float [] lonlatTuple = new float[2];
+		float [] lonlatTuple = new float[3];
+
+		//Check for nulls
+		if(!cmds.containsKey(CMD_LON) || !cmds.containsKey(CMD_LAT)){
+			return null;
+		}
+
 		//cmds.get will return null if key does not exist
 		lonlatTuple[0] = cmds.get(CMD_LON);
 		lonlatTuple[1] = cmds.get(CMD_LAT);
+		lonlatTuple[2] = cmds.get(CMD_COUNT);
 		
 		return lonlatTuple;
 
