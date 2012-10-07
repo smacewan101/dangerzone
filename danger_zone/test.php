@@ -13,7 +13,7 @@ if($socket){
 	fwrite($socket,"LON 91.12 LAT 40.78");
 	sleep(1);
 	$readsocket = fsockopen($host,$resultport,$errNum2);
-	if($readsocket){
+	if($){readsocket
 		echo $fread($readsocket,8192);
 		fclose($readsocket);
 	}else{

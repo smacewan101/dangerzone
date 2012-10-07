@@ -1,4 +1,4 @@
-//package danger_zone;
+package danger_zone;
 import java.io.*;
 import java.net.*;
 import java.util.Timer;
@@ -6,18 +6,22 @@ import java.util.Timer;
 
 /**
 *@author Ethan Eldridge <ejayeldridge @ gmail.com>
-*@version 0.0
-*@since 2012-10-2
+*@version 0.1
+*@since 2012-10-5
 *
 * KD Tree / Listening Object Interface for the danger zone application.
 * Provides a wrapper for an interface to the all important Danger Zone K-d(2) Tree
 */
 public class DangerControl{
-	
+	/**
+	*Socket to accept incoming queries to the Danger Control interface, listens on port 5480
+	*/
+	ServerSocket listen = null;
+
 	public static void main(String argv[]) throws Exception
 	{
 		//5480 For Listening, 5481 to send back out
-		ServerSocket listen = new ServerSocket(5480);
+		listen = new ServerSocket(5480);
 
 		//Time out for the server while I test so I don't have to kill it
 		//10 Seconds should be ok for now
@@ -42,12 +46,18 @@ public class DangerControl{
 			BufferedReader info = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
 			String msg;
 
+			float[] geoCmd = null;
 			while((msg = info.readLine()) != null){
 				//Parse information from the message:
-			}
+				geoCmd = CommandParser.parseGeoCommand(msg);
+				if(geoCmd != null){
+					//We have recieved the Coordinates
+					System.out.println("OH HEY FUCKER I GOT THIS SHIT " + geoCmd[0] + " " + geoCmd[1]);
+				}
 
+			}
+			//Close the incoming stream
 			incoming.close();
-			response.close();
 
 
 		}
