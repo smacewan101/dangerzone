@@ -31,6 +31,9 @@ public class DangerControl{
 	*/
 	DangerNode dangerZones = null;
 
+	/**
+	*Creates an instance of the DangerControl class.
+	*/
 	public DangerControl() throws Exception{
 		//5480 For Listening, 5481 to send back out
 		clientListener = new ServerSocket(5480);
@@ -40,6 +43,9 @@ public class DangerControl{
 
 	}
 
+	/**
+	*Creates and constructs the tree stored in dangerZones from the database
+	*/
 	public void createTree(){
 		dangerZones = new DangerNode(9,9,1);
 		dangerZones.addNode(new DangerNode(7,2,4));
@@ -48,6 +54,9 @@ public class DangerControl{
 		dangerZones.reBalanceTree(dangerZones);
 	}
 
+	/**
+	*Run this instance of DangerControl
+	*/
 	public void run() throws Exception{
 		//Fun Fact, Java supports labels. I didn't know Java liked Spaghetti
 		Running:
@@ -74,6 +83,9 @@ public class DangerControl{
 		}	
 	}
 
+	/**
+	*Readings incoming messages and calls the dispatcher to send responses
+	*/
 	public void read() throws Exception{
 		//Read incoming messages with autoflushing printwriter
 		BufferedReader info = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
@@ -93,10 +105,19 @@ public class DangerControl{
 		info.close();
 	}
 
+	/**
+	*Dispatches a response back to the client of the nearest neighbors to the point they asked for.
+	*@param neighbors The nearest zones returned by the search for the tree
+	*/
 	public void dispatchResponse(Stack<DangerNode> neighbors){
 		System.out.println(neighbors);
 	}
 
+	/**
+	*Parses a command in the GEO COMMAND format, will return the results of searching the tree for the specified coordinate and number of near zones
+	*@param geoCommand String command in the GEO COMMAND format;
+	*@return returns the results of searching the tree for the coordinate.
+	*/
 	public Stack<DangerNode> handleGeoCommand(String geoCommand){
 		float[] geoCmd = null;
 		//Parse information from the message:
