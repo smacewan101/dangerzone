@@ -114,10 +114,10 @@ public class DangerControl{
 				this.dispatchResponse(this.handleGeoCommand(msg),responseStream);
 				//Force the stream to spit back to the client
 				incoming.shutdownOutput();
-				//remake the incoming output channel
 				incoming = clientListener.accept();
 				responseStream = new DataOutputStream(incoming.getOutputStream());
-				info = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
+				
+				
 			}
 			//We can extend right here to implement more commands
 		}
