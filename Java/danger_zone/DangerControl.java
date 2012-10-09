@@ -113,7 +113,6 @@ public class DangerControl{
 	*/
 	public void dispatchResponse(Stack<DangerNode> neighbors){
 		//Lets send the response as a json array of the nodes
-		kjhhkh
 		JSONObject response = new JSONObject();
 		response.put("neighbors", neighbors);
 		System.out.println(response);
@@ -144,7 +143,6 @@ public class DangerControl{
 	public static void main(String argv[]) throws Exception
 	{
 		DangerControl control = new DangerControl();		
-		new JSONObject();
 		control.run();
 
 	}

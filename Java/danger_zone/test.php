@@ -10,7 +10,7 @@ $timeout = 30;  //timeout in seconds
 $socket =  fsockopen($host,$hostport,$errNum);
 
 if($socket){
-	fwrite($socket,"LON 91.12 LAT 40.78 NUM 3\n");
+	fwrite($socket,"LON 13 LAT 9 NUM 3\n");
 	sleep(1);
 	//Then we hope to god that happiness occurs
 	$response = $_POST['response'];
