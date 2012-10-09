@@ -12,14 +12,8 @@ $socket =  fsockopen($host,$hostport,$errNum);
 if($socket){
 	fwrite($socket,"LON 91.12 LAT 40.78 NUM 3\n");
 	sleep(1);
-	$readsocket = fsockopen($host,$resultport,$errNum2);
-	if($readsocket){
-		echo $fread($readsocket,8192);
-		fclose($readsocket);
-	}else{
-		echo "Failed read with " . $errNum2 .'\n';
-	}
-
+	//Then we hope to god that happiness occurs
+	$response = $_POST['response'];
 }
 
 fclose($socket);

@@ -392,7 +392,7 @@ public class DangerNode{
 		p.addNode(new DangerNode(15,13,6));
 		p.printTree();
 		System.out.println("Re-Balancing Tree");
-		p= p.reBalanceTree(p);
+		p= DangerNode.reBalanceTree(p);
 		p.printTree();
 		float [] s = new float[2];
 		System.out.println("Nearest Neighbor Search on 13,9");

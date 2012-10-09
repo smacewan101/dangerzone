@@ -3,6 +3,9 @@ import java.io.*;
 import java.net.*;
 import java.util.Timer;
 import java.util.Stack;
+import java.util.Map;
+//http://code.google.com/p/json-simple/
+import org.json.simple.JSONObject;
 
 
 /**
@@ -51,7 +54,7 @@ public class DangerControl{
 		dangerZones.addNode(new DangerNode(7,2,4));
 		dangerZones.addNode(new DangerNode(12,12,5));
 		dangerZones.addNode(new DangerNode(15,13,6));
-		dangerZones.reBalanceTree(dangerZones);
+		this.dangerZones = DangerNode.reBalanceTree(dangerZones);
 	}
 
 	/**
@@ -66,7 +69,6 @@ public class DangerControl{
 				this.read();
 		}
 		//Cleanup
-		System.out.print("done");
 		clientListener.close();
 	}
 
@@ -110,7 +112,11 @@ public class DangerControl{
 	*@param neighbors The nearest zones returned by the search for the tree
 	*/
 	public void dispatchResponse(Stack<DangerNode> neighbors){
-		System.out.println(neighbors);
+		//Lets send the response as a json array of the nodes
+		kjhhkh
+		JSONObject response = new JSONObject();
+		response.put("neighbors", neighbors);
+		System.out.println(response);
 	}
 
 	/**
@@ -124,7 +130,7 @@ public class DangerControl{
 		geoCmd = CommandParser.parseGeoCommand(geoCommand);
 		if(geoCmd != null){
 			//We have recieved the Coordinates and should play with the tree
-			System.out.println("Searching tree for " + geoCmd[0] + " " + geoCmd[1]);
+			//System.out.println("Searching tree for " + geoCmd[0] + " " + geoCmd[1]);
 			if(dangerZones == null){
 				System.out.println("No Tree Initailized");
 				return null;
@@ -138,6 +144,7 @@ public class DangerControl{
 	public static void main(String argv[]) throws Exception
 	{
 		DangerControl control = new DangerControl();		
+		new JSONObject();
 		control.run();
 
 	}
