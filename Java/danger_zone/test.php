@@ -10,11 +10,11 @@ if(!$sock){
 	echo $errstr;
 }else{
 	fwrite($sock, "LON 13 LAT 9 NUM 3\r");
-	fwrite($sock, "LON 91.12 LAT 40.78 NUM 3\r");
 	while(!feof($sock)){
 		echo fgets($sock,1024);
 		fclose($sock);
 		$sock = stream_socket_client($host . ':' . $hostport,$errno,$errstr,10);
+		fwrite($sock, "LON 91.12 LAT 40.78 NUM 3\r");
 	}
 	fclose($sock);
 }
