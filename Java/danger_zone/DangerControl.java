@@ -8,6 +8,7 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 
+
 /**
 *@author Ethan Eldridge <ejayeldridge @ gmail.com>
 *@version 0.1
@@ -33,6 +34,11 @@ public class DangerControl{
 	*Data Structure to hold the dangerZones from the database. 
 	*/
 	DangerNode dangerZones = null;
+
+	/**
+	*The url that the output of the commands will be send to
+	*/
+	public static final String URL_TO_SEND_TO = "http://localhost/Server/Java/danger_zone/test.php";
 
 	/**
 	*Creates an instance of the DangerControl class.
@@ -91,14 +97,16 @@ public class DangerControl{
 	public void read() throws Exception{
 		//Read incoming messages with autoflushing printwriter
 		BufferedReader info = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
+		DataOutputStream responseStream = new DataOutputStream(incoming.getOutputStream());
 		String msg;
 
 		
 		while((msg = info.readLine()) != null){
+			System.out.println(msg);
 			//We should use some type of switch or something to figure out what function to call from the command parser
 			if(msg.indexOf(CommandParser.CMD_LON) != -1 && msg.indexOf(CommandParser.CMD_LAT) != -1){
 				//Handle the command and respond to it
-				this.dispatchResponse(this.handleGeoCommand(msg));
+				this.dispatchResponse(this.handleGeoCommand(msg),responseStream);
 			}
 			//We can extend right here to implement more commands
 		}
@@ -111,11 +119,15 @@ public class DangerControl{
 	*Dispatches a response back to the client of the nearest neighbors to the point they asked for.
 	*@param neighbors The nearest zones returned by the search for the tree
 	*/
-	public void dispatchResponse(Stack<DangerNode> neighbors){
+	public void dispatchResponse(Stack<DangerNode> neighbors,DataOutputStream responseStream) throws Exception{
 		//Lets send the response as a json array of the nodes
 		JSONObject response = new JSONObject();
 		response.put("neighbors", neighbors);
 		System.out.println(response);
+		responseStream.writeBytes(response.toString());
+		// responseStream.writeBytes("+\n");
+		responseStream.flush();
+	
 	}
 
 	/**
