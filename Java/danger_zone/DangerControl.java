@@ -23,9 +23,13 @@ public class DangerControl{
 	*/
 	ServerSocket clientListener = null;
 	/**
+	*Timeout for the DangerControl program's clientListener, this must be set in integer form (Seconds)
+	*/
+	int int_timeout = 5;
+	/**
 	*Timeout for the DangerControl program itself, this is used during debugging and will probably be removed in release implementations
 	*/
-	long timeout = System.currentTimeMillis() + 1000*5;
+	long long_timeout = System.currentTimeMillis() + 1000*int_timeout;
 	/**
 	*Socket that will hold the incoming traffic coming from the clientListener
 	*/
@@ -46,6 +50,7 @@ public class DangerControl{
 	public DangerControl() throws Exception{
 		//5480 For Listening, 5481 to send back out
 		clientListener = new ServerSocket(5480);
+		clientListener.setSoTimeout(int_timeout);
 		//Construct the Tree to hold the danger zones (note this should be replaced by a tree building from sql function)
 		this.createTree();
 
@@ -69,9 +74,10 @@ public class DangerControl{
 	public void run() throws Exception{
 		//Fun Fact, Java supports labels. I didn't know Java liked Spaghetti
 		Running:
-		while(System.currentTimeMillis() < timeout){
+		while(System.currentTimeMillis() < long_timeout){
 			//If we can't listen then just loop around
 			if(!this.listen()){ continue Running; }
+			System.out.println("I can read");
 				this.read();
 		}
 		//Cleanup
@@ -102,15 +108,21 @@ public class DangerControl{
 
 		
 		while((msg = info.readLine()) != null){
+			System.out.println("yay");
 			System.out.println(msg);
 			//We should use some type of switch or something to figure out what function to call from the command parser
 			if(msg.indexOf(CommandParser.CMD_LON) != -1 && msg.indexOf(CommandParser.CMD_LAT) != -1){
 				//Handle the command and respond to it
 				this.dispatchResponse(this.handleGeoCommand(msg),responseStream);
+				System.out.print("OUT !");
+				incoming.shutdownOutput();
+				
 			}
 			//We can extend right here to implement more commands
+			System.out.println("out");
 		}
 		//Close the incoming stream
+		System.out.println("ALL OUT");
 		incoming.close();
 		info.close();
 	}
@@ -127,6 +139,9 @@ public class DangerControl{
 		responseStream.writeBytes(response.toString());
 		// responseStream.writeBytes("+\n");
 		responseStream.flush();
+		//responseStream.close();
+
+		System.out.println("Message Dispatched");
 	
 	}
 
