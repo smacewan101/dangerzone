@@ -77,7 +77,6 @@ public class DangerControl{
 		while(System.currentTimeMillis() < long_timeout){
 			//If we can't listen then just loop around
 			if(!this.listen()){ continue Running; }
-			System.out.println("I can read");
 				this.read();
 		}
 		//Cleanup
@@ -108,21 +107,17 @@ public class DangerControl{
 
 		
 		while((msg = info.readLine()) != null){
-			System.out.println("yay");
-			System.out.println(msg);
+			//System.out.println(msg);
 			//We should use some type of switch or something to figure out what function to call from the command parser
 			if(msg.indexOf(CommandParser.CMD_LON) != -1 && msg.indexOf(CommandParser.CMD_LAT) != -1){
 				//Handle the command and respond to it
 				this.dispatchResponse(this.handleGeoCommand(msg),responseStream);
-				System.out.print("OUT !");
 				incoming.shutdownOutput();
 				
 			}
 			//We can extend right here to implement more commands
-			System.out.println("out");
 		}
 		//Close the incoming stream
-		System.out.println("ALL OUT");
 		incoming.close();
 		info.close();
 	}
@@ -135,14 +130,9 @@ public class DangerControl{
 		//Lets send the response as a json array of the nodes
 		JSONObject response = new JSONObject();
 		response.put("neighbors", neighbors);
-		System.out.println(response);
+		//System.out.println(response);
 		responseStream.writeBytes(response.toString());
-		// responseStream.writeBytes("+\n");
-		responseStream.flush();
-		//responseStream.close();
-
-		System.out.println("Message Dispatched");
-	
+		responseStream.flush();	
 	}
 
 	/**
