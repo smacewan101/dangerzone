@@ -50,7 +50,7 @@ public class DangerControl{
 	public DangerControl() throws Exception{
 		//5480 For Listening, 5481 to send back out
 		clientListener = new ServerSocket(5480);
-		clientListener.setSoTimeout(int_timeout);
+		//clientListener.setSoTimeout(int_timeout);
 		//Construct the Tree to hold the danger zones (note this should be replaced by a tree building from sql function)
 		this.createTree();
 
@@ -107,13 +107,17 @@ public class DangerControl{
 
 		
 		while((msg = info.readLine()) != null){
-			//System.out.println(msg);
+			System.out.println(msg);
 			//We should use some type of switch or something to figure out what function to call from the command parser
 			if(msg.indexOf(CommandParser.CMD_LON) != -1 && msg.indexOf(CommandParser.CMD_LAT) != -1){
 				//Handle the command and respond to it
 				this.dispatchResponse(this.handleGeoCommand(msg),responseStream);
+				//Force the stream to spit back to the client
 				incoming.shutdownOutput();
-				
+				//remake the incoming output channel
+				incoming = clientListener.accept();
+				responseStream = new DataOutputStream(incoming.getOutputStream());
+				info = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
 			}
 			//We can extend right here to implement more commands
 		}

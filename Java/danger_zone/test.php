@@ -13,6 +13,7 @@ if(!$sock){
 	while(!feof($sock)){
 		echo fgets($sock,1024);
 		fwrite($sock, "LON 91.12 LAT 40.78 NUM 3\r");
+		sleep(1);
 	}
 	fclose($sock);
 }
