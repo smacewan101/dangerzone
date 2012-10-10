@@ -178,6 +178,87 @@ public class DangerNode{
 	}
 
 	/**
+	*Overloaded nearestNeighbor that returns nodes within a radius of the searchTuple, not necessarily the best first.
+	*@param searchTuple The tuple to find neighbors for
+	*@param numOfNeighbors How many neighbors one would like maximum from the tree, the function will not neccesary return this number of nodes
+	*@param radius Radius to search in from the searchTuple, note that we use squared distance in comparisons so squaring the radius may be a good idea before passing it into the function
+	*@return Returns a Stack of DangerNodes of nearest neighbors to the searchTuple
+	*/
+	public Stack<DangerNode> nearestNeighbor(float[] searchTuple, int numOfNeighbors, float radius){
+		Stack<DangerNode> neighborNodes = new Stack<DangerNode>();
+		neighborNodes =  this.innerNN(searchTuple,0,neighborNodes,radius);
+		if(neighborNodes.size() > numOfNeighbors){
+			neighborNodes.setSize(numOfNeighbors);
+		}
+		return neighborNodes;
+	}
+
+	/**
+	*Helper function to perform the nearest neighbor algorithm
+	*@param searchTuple The tuple to find neighbors for
+	*@param depth Depth of the current node
+	*@param bests Stack to store current best neighbors in
+	*@return Returns stack of DangerNodes of nearest neighbors to the searchTuple
+	*/
+	public Stack<DangerNode> innerNN(float[] searchTuple, int depth,Stack<DangerNode> bests,float radius){
+		//Iteratively search the tree using a stack to maintain links between trees and such
+		DangerNode curNode = this;
+		Stack<DangerNode> treeStack = new Stack<DangerNode>();
+
+		//Move down the tree until we hit a leaf node
+		while(curNode != null){
+			treeStack.push(curNode);
+			if(curNode.getCoordinate(depth % coordinates.length) > searchTuple[depth % searchTuple.length]){
+				if(curNode.left != null){
+					curNode = curNode.left;
+				}else{
+					//leaf node 
+					curNode = null;
+				}
+			}else{
+				if(curNode.right != null){
+					curNode = curNode.right;
+				}else{
+					curNode = null;
+				}
+			}
+			depth++;
+		}
+
+		//Now unwind our 'recursion' checking children along the way up for better distances
+		final DangerNode searchNode = new DangerNode(searchTuple[0],searchTuple[1],-1);
+		float currentBest = treeStack.peek().sqDistance(searchNode);
+		bests.push(treeStack.peek());
+		while(depth != 0){
+			curNode = treeStack.pop();
+			//Check if this node is better
+			if(curNode.sqDistance(searchNode) < radius){
+				currentBest = curNode.sqDistance(searchNode);
+				bests.push(curNode);
+				//Check its child to see if we need to expand the search to the other branch of the tree
+				if(curNode.left != null){
+					if(curNode.sqDistance(curNode.left) < radius){
+						//Must search that tree
+						bests = curNode.left.innerNN(searchTuple,depth-1,bests,radius);
+					}
+				}
+				if(curNode.right != null){
+					if(curNode.sqDistance(curNode.right) < radius){
+						//Must also search that
+						bests = curNode.right.innerNN(searchTuple,depth-1,bests,radius);
+					}
+				}
+			}
+			//move up a depth
+			depth--;
+		}
+		//Now we have a Stack of the best nodes we found. 
+		return bests;
+	}
+
+
+
+	/**
 	*Nearest neighbor search on this DangerNode. Returns up to numOfNeighbors neighbors. 
 	*@param searchTuple The tuple we'd like to find neighbors for.
 	*@param numOfNeighbors How many neighbors one would like maximum from the tree, the function will not neccesary return this number of nodes
@@ -239,13 +320,13 @@ public class DangerNode{
 				if(curNode.left != null){
 					if(curNode.sqDistance(curNode.left) < currentBest){
 						//Must search that tree
-						bests = curNode.left.innerNN(searchTuple,depth,bests);
+						bests = curNode.left.innerNN(searchTuple,depth-1,bests);
 					}
 				}
 				if(curNode.right != null){
 					if(curNode.sqDistance(curNode.right) < currentBest){
 						//Must also search that
-						bests = curNode.right.innerNN(searchTuple,depth,bests);
+						bests = curNode.right.innerNN(searchTuple,depth-1,bests);
 					}
 				}
 			}
@@ -399,6 +480,9 @@ public class DangerNode{
 		s[0] = 13;
 		s[1] = 9;
 		Stack<DangerNode> bests = p.nearestNeighbor(s,2);
+		System.out.println("Bests: \n"+ bests.pop() +"\n" + bests.pop());
+		p.printTree();
+		bests = p.nearestNeighbor(s,3,11);
 		System.out.println("Bests: \n"+ bests.pop() +"\n" + bests.pop());
 	}	
 
