@@ -182,7 +182,7 @@ public class DangerNode{
 	*@param searchTuple The tuple to find neighbors for
 	*@param numOfNeighbors How many neighbors one would like maximum from the tree, the function will not neccesary return this number of nodes
 	*@param radius Radius to search in from the searchTuple, note that we use squared distance in comparisons so squaring the radius may be a good idea before passing it into the function
-	*@return Returns a Stack of DangerNodes of nearest neighbors to the searchTuple
+	*@return Returns a Stack of DangerNodes of nearest neighbors to the searchTuple, can return an empty stack if radius is too small
 	*/
 	public Stack<DangerNode> nearestNeighbor(float[] searchTuple, int numOfNeighbors, float radius){
 		Stack<DangerNode> neighborNodes = new Stack<DangerNode>();
