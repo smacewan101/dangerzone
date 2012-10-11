@@ -2,8 +2,13 @@
 require_once("twitterQuery.php");
 require_once("twitterDB.php");
 $twitterQuery = new TwitterQuery();
-$keywords = array();
-$geo = array('44.475','-73.212', '5mi');
+$keywords = explode(' ', $_POST['keywords']);
+//$geo = array('44.475','-73.212', '5mi');
+$lat = $_POST['lat'];
+$long = $_POST['long'];
+$radius=$_POST['radius'];
+$units =$_POST['units'];
+$geo=array($lat,$long,implode('',array($radius,$units)));
 $twitterQuery->setKeywords($keywords);
 $twitterQuery->setGeo($geo);
 $twitterQuery->constructSearch();

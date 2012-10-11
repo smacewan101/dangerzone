@@ -24,7 +24,6 @@ class TwitterDB{
 			$this ->con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$this->con->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 		}catch(PDOException $err){$this->error = true;}
-		var_dump($this->con);
 	}
 
 
@@ -65,6 +64,45 @@ class TwitterDB{
 	}
 
 
+	//grabs all the tweets we have stored in the database
+	function selectTweets(){
+		if($this->con == null){
+			$this->dbConnect();	
+		}		
+		$selectQuery = 'SELECT * FROM '.$this->tableName;
+		$selectStatement =$this->con->prepare($selectQuery);
+		$selectStatement->execute();
+		return $selectStatement->fetchall();
+	}
+
+
+	//grabs the stored tweet information by the specific id string
+	function selectTweetByID($id_str){
+		if($this->con == null){
+			$this->dbConnect();	
+		}
+		$selectQuery = 'SELECT * FROM '.$this->tableName.' WHERE id_str='.$id_str;
+		$selectStatement =$this->con->prepare($selectQuery);
+		$selectStatement->execute();
+		return $selectStatement->fetchall();
+	}
+
+
+	//grabs stored tweet information by specific user id
+	function selectTweetByUserID($from_user_id){
+		if($this->con == null){
+			$this->dbConnect();	
+		}
+		$selectQuery = 'SELECT * FROM '.$this->tableName.' WHERE from_user_id='.$from_user_id;
+		$selectStatement =$this->con->prepare($selectQuery);
+		$selectStatement->execute();
+		return $selectStatement->fetchall();
+	}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////FUNCTIONS USED BY insertTweets//////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+
 	//check the data base to see if a tweet already exists in there
 	//input: id string of a tweet
 	function tweetExists($id_str){
@@ -79,7 +117,6 @@ class TwitterDB{
 		return $exists;
 	}
 
-
 	//converts the date string given back by a tweet query into a datetime mysql format
 	//input: tweet date string
 	function tweetDate($date_string){
@@ -92,6 +129,9 @@ class TwitterDB{
 		return $date;
 	}
 
+
+	//converts a string month to an int
+	//input: string
 	function numericMonth($month_string){
 		$month='01';
 		switch($month_string){
