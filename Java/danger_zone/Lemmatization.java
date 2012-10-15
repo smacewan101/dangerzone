@@ -3,7 +3,7 @@ import java.io.*;
 import java.net.*;
 import java.util.Timer;
 import java.util.Stack;
-import java.util.Map;
+import java.util.HashMap;
 import java.io.*;
 
 /**
@@ -11,6 +11,7 @@ import java.io.*;
 *@version 0.0
 *@since 2012-10-11
 *
+*Class to find the stem or lemma of a word by using heuristics with suffixes and prefixes.
 */
 public class Lemmatization{
 	/**
@@ -25,6 +26,25 @@ public class Lemmatization{
 	*List of common prefixes in the english language
 	*/
 	static final private String[] prefixes = {"an","a","ante","anti","auto","circum","co","com","con","contra","de","dis","en","ex","extra","hetero","homo","hyper","homo","hyper","il","im","in","ir","inter","intra","in","macro","micro","mono","non","omni","post","pre","pro","sub","syn","trans","tri","uni","un"};
+	/**
+	*Exception mapping from an exception such as ran, to a word root like run
+	*/
+	static final private HashMap<String,String> exceptions = new HashMap<String,String>(){{
+		put("ran","run");  //ran -> run
+		put("runn","run"); //running -> runn
+		put("brought","bring");
+		put("bought","buy");
+		put("caught","catch");
+		put("thought","think");
+		put("brok","break");//broken -> brok -> break
+		put("chos","choose"); //chosen, chose
+		put("froze","freeze"); //froze
+		put("froz","freeze"); //frozen -> froz -> freeze
+		put("spok","speak")	; //spoken -> spok
+		put("spoke","speak"); //spoke - > speak
+		put("stole","stolen");//stole -> stolen
+		put("was","be"); // we can add more as we go on
+	}};
 
 	/**
 	*@param word The word to be lemmatized
@@ -34,6 +54,16 @@ public class Lemmatization{
 		this.word = word;
 		this.removeSuffix();
 		this.removePrefix();
+		this.checkException();
+	}
+
+	/**
+	*Changes a word, if it's an exception to its proper root
+	*/
+	public void checkException(){
+		if(exceptions.containsKey(this.word)){
+			this.word = exceptions.get(this.word);
+		}
 	}
 
 	/**
@@ -69,7 +99,7 @@ public class Lemmatization{
 
 	public static void main(String argv[]) throws Exception
 	{
-		Lemmatization s = new Lemmatization("any");
+		Lemmatization s = new Lemmatization("running");
 		System.out.println(s);
 
 	}
