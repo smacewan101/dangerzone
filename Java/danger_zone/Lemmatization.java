@@ -21,11 +21,11 @@ public class Lemmatization{
 	/**
 	*List of common suffixes in the english language
 	*/
-	static final private String[] suffixes = {"ly","y","ing","ed","en","er","est","n't","s","ian","ize","ise","fy","ful","able","ible","hood","ness","less","ism","ment","ist","ment","al","ish","ify","acy","ance","ence","dom","or","ity","ty","ship","sion","tion","ate","esque","ic","ical","ious","ous","ive"};
+	static final private String[] suffixes = {"!","ly","ing","ed","en","er","est","n't","s","ian","ize","ise","fy","ful","able","ible","hood","ness","less","ism","ment","ist","ment","al","ish","ify","acy","ance","ence","dom","or","ity","ty","ship","sion","tion","ate","esque","ic","ical","ious","ous","ive"};
 	/**
 	*List of common prefixes in the english language
 	*/
-	static final private String[] prefixes = {"an","a","ante","anti","auto","circum","co","com","con","contra","de","dis","en","ex","extra","hetero","homo","hyper","homo","hyper","il","im","in","ir","inter","intra","in","macro","micro","mono","non","omni","post","pre","pro","sub","syn","trans","tri","uni","un"};
+	static final private String[] prefixes = {"an","ante","anti","auto","circum","co","com","con","contra","de","dis","en","ex","extra","hetero","homo","hyper","homo","hyper","il","im","in","ir","inter","intra","in","macro","micro","mono","non","omni","post","pre","pro","sub","syn","trans","tri","uni","un"};
 	/**
 	*Exception mapping from an exception such as ran, to a word root like run
 	*/
