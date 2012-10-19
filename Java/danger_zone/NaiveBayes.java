@@ -23,17 +23,17 @@ public class NaiveBayes{
 	/**
 	*Holds The two categories of the data being classified
 	*/
-	private HashMap<int, HashMap<String,int>> category_count = new HashMap<int, HashMap<String,int>>();
+	private HashMap<Integer, HashMap<String,Integer>> category_count = new HashMap<Integer, HashMap<String,Integer>>();
 
 	public NaiveBayes(){
-		HashMap<String,int> danger = HashMap<String,int>();
-		HashMap<String,int> safe = HashMap<String,int>();
+		HashMap<String,Integer> danger = new HashMap<String,Integer>();
+		HashMap<String,Integer> safe = new HashMap<String,Integer>();
 		category_count.put(CAT_DANGER, danger);
 		category_count.put(CAT_SAFE, safe);
 	}
 
 	/**
-	*Trains the algorithm on the dataset
+	*Trains the algorithm on the dataset, each category is specified by a constant declared in this class, CAT_SAFE, CAT_DANGER and such.
 	*/
 	public void train(int category, String tweet){
 		Lemmatizer tweetStripper = new Lemmatizer();
@@ -47,10 +47,18 @@ public class NaiveBayes{
 				category_count.get(category).put(pt,1);
 			}
 			int numW = category_count.get(category).get(pt);
-			category_count.get(category).put(pt,numW);
+			System.out.println(pt);
+			System.out.println(numW);
+			category_count.get(category).put(pt,numW+1);
 
 		}
+	}
 
+	public static void main(String[] args) {
+		NaiveBayes nb = new NaiveBayes();
+
+		nb.train(NaiveBayes.CAT_SAFE,"I love to dance with Kittens");
+		nb.train(NaiveBayes.CAT_DANGER,"There are Kittens on Fire and its terrible those poor Kittens");
 
 
 
