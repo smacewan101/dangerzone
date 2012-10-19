@@ -18,7 +18,14 @@ public class NaiveBayes{
 	*Constant for the category safe
 	*/
 	public static final int CAT_SAFE = 1;
-
+	/**
+	*Lemmatizer instance to strip and parse tweets into a managable form.
+	*/
+	private Lemmatizer tweetStripper = new Lemmatizer();
+	/**
+	*Helper array to make the classifying function easier
+	*/
+	private static final int [] categories = {CAT_SAFE,CAT_DANGER};
 
 	/**
 	*Holds The two categories of the data being classified
@@ -36,7 +43,7 @@ public class NaiveBayes{
 	*Trains the algorithm on the dataset, each category is specified by a constant declared in this class, CAT_SAFE, CAT_DANGER and such.
 	*/
 	public void train(int category, String tweet){
-		Lemmatizer tweetStripper = new Lemmatizer();
+
 
 		//Get the words out of the tweet
 		String [] parsedTweet = tweetStripper.parseTweet(tweet).split(" ");
@@ -47,11 +54,27 @@ public class NaiveBayes{
 				category_count.get(category).put(pt,1);
 			}
 			int numW = category_count.get(category).get(pt);
-			System.out.println(pt);
-			System.out.println(numW);
 			category_count.get(category).put(pt,numW+1);
 
 		}
+		//count of pt in cat divided by total count of pt in all categories = probability
+	}
+
+	public int classify(String tweet){
+		//Each word is classified indenpendtly, whichever one has the most wins. 
+		String [] parsedTweet = tweetStripper.parseTweet(tweet).split(" ");
+
+		//Classify each word
+		for(String pt : parsedTweet){
+			for(int cat : categories){
+				if(category_count.get(cat).containsKey(pt)){
+
+				}else{
+
+				}
+			}
+		}
+
 	}
 
 	public static void main(String[] args) {
