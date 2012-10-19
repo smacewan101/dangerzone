@@ -47,10 +47,16 @@ public class Lemmatizer{
 		}
 	}
 
+	public final String parseTweet(String tweet){
+		this.stripTweet(tweet);
+		this.stem();
+		return this.toString();
+	}
+
 	public String toString(){
 		String s = "";
 		for(String o : outputs){
-			s = s.concat(o);
+			s = s.concat(o) + " ";
 		}
 		return s;
 	}
