@@ -13,7 +13,7 @@ class TwitterDB{
 
 	function __construct(){
 		$this->dsn = "mysql:dbname=".$this->dbName.";host=".$this->host;
-		$this->con = $this->dbConnect();
+		$this->dbConnect();
 	}
 
 
@@ -41,7 +41,6 @@ class TwitterDB{
 	//if $tweets is object holding return from query  
 	//pass to this object $tweets->results
 	function insertTweets($tweets, $search_string){
-		$this->dbConnect();
 		foreach ($tweets as $tweet) {
 			$id_str = $tweet->id_str;
 			$from_user_id = $tweet->from_user_id;
@@ -61,6 +60,17 @@ class TwitterDB{
 				$insertStmt->execute($data);				
 			}
 		}
+	}
+
+	//Update tweets to whether they indicate a danger zone or not.
+	//input: tweet id 
+	//       danger level 0= not dangerous
+	//                    1= dangerous
+	function updateTweetDanger($id_str, $danger_level){
+		$db_query = 'UPDATE '.$this->tableName.' set danger=? WHERE id_str = ?';
+		$input = array($danger_level, $id_str);
+		$updateStmt = $this->con->prepare($db_query);
+		$updateStmt->execute($data);
 	}
 
 

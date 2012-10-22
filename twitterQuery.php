@@ -52,8 +52,13 @@
 				curl_setopt( $curl, CURLOPT_URL, $url );
 				curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1 );
 				$result = curl_exec( $curl );
+				if(is_object(json_decode($result, false))){
+					$search_results = json_decode($result, false);
+					$return = $search_results->results;
+				}else{
+					$return = curl_errno($curl);
+				}
 				curl_close( $curl );
-				$return = json_decode($result, false);
 				return $return;
 			}
 			else echo "<p> No Search Was Given.</p>";
