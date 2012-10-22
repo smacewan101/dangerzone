@@ -60,20 +60,62 @@ public class NaiveBayes{
 		//count of pt in cat divided by total count of pt in all categories = probability
 	}
 
+	public void calculateProbabilities(){
+		//Remove all keys from each hash map and do some counting and then put in the scores for everything?
+	}
+
 	public int classify(String tweet){
 		//Each word is classified indenpendtly, whichever one has the most wins. 
 		String [] parsedTweet = tweetStripper.parseTweet(tweet).split(" ");
+
+
+		//Initalize a way to keep track of the tweet
+		HashMap<Integer,Integer> tweetClass = new HashMap<Integer,Integer>();
+		for (int cat : categories) {
+			tweetClass.put(cat,0);
+		}
 
 		//Classify each word
 		for(String pt : parsedTweet){
 			for(int cat : categories){
 				if(category_count.get(cat).containsKey(pt)){
-
+					//Increase count of the word
+					category_count.get(cat).put(pt,category_count.get(cat).get(pt)+1);
 				}else{
-
+					category_count.get(cat).put(pt,1);
 				}
 			}
 		}
+
+		//get the counts of the strings
+		for(String pt : parsedTweet){
+			int total = 0;
+			for(int cat : categories){
+				total = total + category_count.get(cat).get(pt);
+			}
+			//Now apply this to the tweet class
+			for(int cat : categories){
+				//store the probabilities for each word
+				category_count.get(cat).put(pt,category_count.get(cat).get(pt)/total);
+			}
+		}
+
+		//Product each string's probability to determine the total probability for the tweet in each category
+		for(String pt : parsedTweet){
+			for(int cat : categories){
+				tweetClass.put(cat,tweetClass.get(cat)*category_count.get(cat).get(pt));
+			}
+		}
+
+		//Determine the best fitting category
+		int bestFit = 0;
+		for (int cat : categories) {
+			if(tweetClass.get(cat) > bestFit){
+				bestFit = cat;
+			}
+		}
+
+		return bestFit;
 
 	}
 
@@ -83,7 +125,14 @@ public class NaiveBayes{
 		nb.train(NaiveBayes.CAT_SAFE,"I love to dance with Kittens");
 		nb.train(NaiveBayes.CAT_DANGER,"There are Kittens on Fire and its terrible those poor Kittens");
 
-
+		switch(nb.classify("Kittens on fire")){
+			case NaiveBayes.CAT_DANGER:
+				System.out.println("danger");
+				break;
+			case NaiveBayes.CAT_SAFE:
+				System.out.println("safe");
+				break;
+		}
 
 	}
 
