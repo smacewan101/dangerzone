@@ -47,11 +47,59 @@ public class Tweet{
 	private String search_str = "";
 
 	/**
-	*Constructs a tweet
+	*Constructs a tweet with the most basic of information and defaults the rest.
+	*@param id Unique Tweet Id
+	*@param text The text of the tweet itself
 	*/
-	public Tweet(){
-
+	public Tweet(int id,String text){
+		this(id,text,-1,-1,-1,"",new java.sql.Timestamp(System.currentTimeMillis()));
 	}
 
+	/**
+	*Constructs a tweet with default information besides the id, text, latitude and longitude
+	*@param id Unique Tweet id
+	*@param text The text of the tweet itself
+	*@param latitude The latitude coordinate of the tweet
+	*@param longitude The longitude coordinate of the tweet
+	*/
+	public Tweet(int id,String text, float latitiude, float longitude ){
+		this(id,text,latitiude,longitude,-1,"",new java.sql.Timestamp(System.currentTimeMillis()));
+	}
+
+	/**
+	*Constructs a basic geo-spacial time stamped tweet
+	*@param id Unique Tweet id
+	*@param text The text of the tweet itself
+	*@param latitude The latitude coordinate of the tweet
+	*@param longitude The longitude coordinate of the tweet
+	*@param time Timestamp of the tweet.
+	*/
+	public Tweet(int id, String text, float latitude, float longitude, java.sql.Timestamp time){
+		this(id,text,latitiude,longitude,-1,-1,"",time);
+	}
+
+	/**
+	*Constructs a tweet with all the information available
+	*@param id Unique Tweet id
+	*@param text The text of the tweet itself
+	*@param latitude The latitude coordinate of the tweet
+	*@param longitude The longitude coordinate of the tweet
+	*@param parent_id The id of the tweet this tweet was re-tweeted from
+	*@param search The search string that resulted in finding this tweet
+	*@param time Timestamp of the tweet.
+	*/
+	public Tweet(int id, String text, float latitude, float longitude, int parent_id, String search, java.sql.Timestamp time){
+		this.tweet_id = id;
+		this.text = text;
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.parent_id = parent_id;
+		this.search_str = search;
+		this.timestamp = time;
+	}
+
+	public String getTweetText(){
+		return this.text;
+	}
 
 }
