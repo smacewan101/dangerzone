@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 *@version 0.0
 *@since 2012-10-22
 *
-* Class providing an interface to the SQL database for training purposes. 
+* Data class to hold and provide methods to access Tweets
 */
 public class Tweet{
 	/**
@@ -24,7 +24,7 @@ public class Tweet{
 	/**
 	*Latitude of the geo coordinate of this tweet
 	*/
-	private float latitiude = -1;
+	private float latitude = -1;
 
 	/**
 	*Longitude of the geo coordinate of this tweet
@@ -62,8 +62,8 @@ public class Tweet{
 	*@param latitude The latitude coordinate of the tweet
 	*@param longitude The longitude coordinate of the tweet
 	*/
-	public Tweet(int id,String text, float latitiude, float longitude ){
-		this(id,text,latitiude,longitude,-1,"",new java.sql.Timestamp(System.currentTimeMillis()));
+	public Tweet(int id,String text, float latitude, float longitude ){
+		this(id,text,latitude,longitude,-1,"",new java.sql.Timestamp(System.currentTimeMillis()));
 	}
 
 	/**
@@ -75,7 +75,7 @@ public class Tweet{
 	*@param time Timestamp of the tweet.
 	*/
 	public Tweet(int id, String text, float latitude, float longitude, java.sql.Timestamp time){
-		this(id,text,latitiude,longitude,-1,-1,"",time);
+		this(id,text,latitude,longitude,-1,"",time);
 	}
 
 	/**
