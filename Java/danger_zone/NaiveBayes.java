@@ -62,6 +62,14 @@ public class NaiveBayes{
 		//count of pt in cat divided by total count of pt in all categories = probability
 	}
 
+	static public int convertBoolToInt(boolean cat){
+		if(cat){
+			return CAT_DANGER;
+		}else{
+			return CAT_SAFE;
+		}
+	}
+
 	public void calculateProbabilities(){
 		//Remove all keys from each hash map and do some counting and then put in the scores for everything?
 	}

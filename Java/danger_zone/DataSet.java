@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.io.*;
 import java.sql.*;
 import java.sql.ResultSet;
+import java.util.Vector;
 
 /**
 *@author Ethan Eldridge <ejayeldridge @ gmail.com>
@@ -13,9 +14,19 @@ import java.sql.ResultSet;
 */
 public class DataSet{
 	/**
-	*
+	*Connect to the database
 	*/
 	Connection con = null;
+
+	/**
+	*Starting size of the dataset variable. 
+	*/
+	static private final int dSize = 1000;
+
+	/**
+	*Vector to hold the dataset from the database
+	*/
+	Vector<Tweet> dataset = new Vector<Tweet>(dSize);
 
 
 	/**
@@ -44,11 +55,14 @@ public class DataSet{
 		return query.getResultSet();
 	}
 
-	public void constructDataSet(ResultSet results) throws Exception{
+
+	public void constructTrainingDataSet(ResultSet results) throws Exception{
 		try{
 			//Read in the data
 			while(results.next()){
-
+				int id = Integer.parseInt(results.getString(1));
+				String text = results.getString(3);
+				dataset.add(new Training_Tweet(id, text, NaiveBayes.convertBoolToInt(results.getBoolean(8))));
 			}
 		}catch(java.sql.SQLException jSQL){
 			//Do nothing
@@ -63,7 +77,7 @@ public class DataSet{
 		try{
 			con = openConnection();
 			ResultSet data = getData();
-			constructDataSet(data);	
+			constructTrainingDataSet(data);	
 		}catch(Exception e){
 			System.out.println(e.getStackTrace());
 			return false;
