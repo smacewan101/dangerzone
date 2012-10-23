@@ -13,11 +13,11 @@ public class NaiveBayes{
 	/**
 	*Constant for the category danger
 	*/
-	public static final int CAT_DANGER = 0;
+	public static final int CAT_DANGER = 1;
 	/**
 	*Constant for the category safe
 	*/
-	public static final int CAT_SAFE = 1;
+	public static final int CAT_SAFE = 0;
 	/**
 	*Lemmatizer instance to strip and parse tweets into a managable form.
 	*/
@@ -41,6 +41,8 @@ public class NaiveBayes{
 
 	/**
 	*Trains the algorithm on the dataset, each category is specified by a constant declared in this class, CAT_SAFE, CAT_DANGER and such.
+	*@param category The category to place this tweet into, should be selected from the constants declared in this class.
+	*@param tweet The text string of the tweet to be classified
 	*/
 	public void train(int category, String tweet){
 
@@ -64,6 +66,10 @@ public class NaiveBayes{
 		//Remove all keys from each hash map and do some counting and then put in the scores for everything?
 	}
 
+	/**
+	*Classifies a given tweet into a category class defined as a constant in this class.
+	*@param tweet The text string of the sweet to be classified
+	*/
 	public int classify(String tweet){
 		//Each word is classified indenpendtly, whichever one has the most wins. 
 		String [] parsedTweet = tweetStripper.parseTweet(tweet).split(" ");
