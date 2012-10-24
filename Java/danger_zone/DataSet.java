@@ -37,13 +37,13 @@ public class DataSet{
 	/**
 	*Opens a connection to the database
 	*/
-	public Connection openConnection() throws Exception{
+	public Connection openConnection(String password) throws Exception{
 		java.util.Properties properties = new java.util.Properties();
-		properties.put("user","root");
-		properties.put("password","sh0wbiz1");
+		properties.put("user","cs276");
+		properties.put("password",password);
 	  	//properties.put("characterEncoding", "ISO-8859-1");
 	  	//properties.put("useUnicode", "true");
-	  	String url = "jdbc:mysql://localhost/test";
+	  	String url = "jdbc:mysql://dangerzone.cems.uvm.edu/test";
 
 	  	Class.forName("com.mysql.jdbc.Driver").newInstance();
 	  	Connection c = DriverManager.getConnection(url, properties);
@@ -90,9 +90,9 @@ public class DataSet{
 	*Initalizes the data set to use the database and create an interface for the database.
 	*@return Returns true if initialization succeeded.
 	*/
-	public boolean initialize() throws Exception{
+	public boolean initialize(String password) throws Exception{
 		try{
-			con = openConnection();
+			con = openConnection(password);
 			System.out.println("connect");
 			ResultSet data = getData();
 			System.out.println("got data");
@@ -116,9 +116,14 @@ public class DataSet{
 	}
 
 	public static void main(String[] args) {
+		//Command line parameter of password
+		if(args.length < 1){
+			System.out.println("Required parameter: Password");
+			System.exit(1);
+		}
 		DataSet d = new DataSet();
 		try{
-			d.initialize();
+			d.initialize(args[0]);
 			System.out.println(d.getNext());
 			System.out.println(d.getNext());
 			Training_Tweet t = (Training_Tweet)d.getNext();
