@@ -1,0 +1,180 @@
+/*http://colorschemedesigner.com/#0131Tw0w0w0w0*/
+*{
+	/* Getting the top of the page to be the actual top of the page */
+	margin: 0;
+	padding: 0;
+}
+div.spacer{
+	clear: both;
+	height: 10px;
+	padding-bottom: 5px;
+}
+body{
+	background-color: #A60400;
+	font-family: "Trebuchet MS", Helvetica, arial, sans-serif;
+	font-size: 12px;
+	color: #5DC8Cd;
+	padding: 0;
+	margin: 0;
+	top: 0;
+	margin-top: none;
+	/*Height of footer aka kenny */
+	padding-bottom: 22px;
+}
+#header{
+	background-color: #FF0700;
+	top: 0;
+}
+#archer{
+	color: #E7FEFF;
+	text-align: center;
+	font-weight: bolder;
+	font-size: 30px;
+	font-family: "Copperplate Gothic Light","Copperplate",Impact, sans-serif;
+	font-style: italic;
+	padding-bottom: 10px;
+	padding-top: 10px;
+}
+/*
+#kenny{
+	color: #000000;
+	background-color: #34C6CD;
+	width: 100%;
+	font-family: "Copperplate Gothic Light","Copperplate", sans-serif;
+	font-weight: bold;
+	font-style: italic;
+	font-size: 8px;
+	text-align: center;
+	position: absolute;
+	bottom: 0;
+	height: 20px;
+	margin-bottom: 2px;
+}
+*/
+#navigation{
+	background-color: #000000;
+	width: 100%;
+}
+#leftArea{
+	padding-top: 10px;
+	margin-left: 1%;
+	float:left;
+	padding-right: 5%;
+	min-height: 100%;
+	height: 400px;
+	width: 25%;
+}
+#rightArea{
+	margin-right: 1%;
+	margin-left: 1%;
+	background-color: #233433;
+	border: 1px solid black;
+	min-height: 400px;
+	
+}
+ul.nav{
+	margin-right: auto;
+	margin-left: auto;
+	text-align: center;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+ul.nav li{
+	margin: 0;
+	padding: 0;
+	background-color: #34C6CD;
+	list-style: none;
+	font-size: 14px;
+	font-weight: bolder;
+	text-decoration: none;
+	display: inline-block;
+	min-width: 20%;
+
+}
+ul.nav li:hover{
+	background-color: #006064;
+	color: #34C6CD;
+}
+a.nav{
+	display: block;
+	text-decoration: none;
+	color: #006064;
+	width: 100%;
+	height: 100%;
+}
+a.nav:hover{
+	color: #34C6CD;
+	
+}
+#twitter{
+	color: #000000;
+	background-color: #BF3030;
+	width: 100%;
+	height: 150px;
+	border: 2px #060400 solid;
+	padding: 5px;
+	overflow: auto;
+	position: relative;
+}
+#twitHead{
+	color: #9FEE00;
+}
+#tweetrule{
+	text-align: center;
+	width: 80%;
+	border: 2px #9FEE00 dashed;
+	margin-right: auto;
+	margin-left: auto;
+}
+#TwitterLink{
+	color: #9FEE00;
+	text-decoration: none;
+	display: block;;
+	width: 100%;
+}
+#github{
+	color: #000000;
+	background-color: #FF4040;
+	width: 100%;
+	height: 150px;
+	border: 2px #060400 solid;
+	padding: 5px;
+	overflow: auto;
+	position: relative;	
+}
+#gitHead{
+	color: #1D7373;
+	text-decoration: none;
+	width: 100%;
+}
+#gitRule{
+	text-align: center;
+	width: 80%;
+	border: 2px #1D7373 dashed;
+	margin-right: auto;
+	margin-left: auto;
+}
+p.GitCommit{
+	font-weight: bold;
+	color: #1D7074;
+	font-size: 10px;
+	text-decoration: underline;
+}
+span.GitContent{
+	font-size: 9px;
+	font-weight: normal;
+	font-family: "Trebuchet MS", Helvetica, arial, sans-serif;
+	display: none;
+}
+#GitMit{
+	color: #000000;
+}
+#GitMit:Hover{
+	color: #FFFFFF;
+}
+#gitInfo{
+	font-size: 10px;
+	font-style: italic;
+	color: #FFFFFF;
+}
