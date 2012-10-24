@@ -1,0 +1,31 @@
+<html>
+<head>
+	<title>Twitter Search Form</title>
+	<style type="text/css">
+		div{width:16%;}
+		input.text{float:right;}
+		label{line-height:170%}
+	</style>
+</head>
+<body>
+
+<form action="twitterSearch.php" method="post">
+	<div>
+		<label for="keywords">Keywords:</label><input class ="text" type="text" name="keywords"/>
+		<br />
+		<label for="lat">Latitude:</label><input class ="text" type="text" name="lat"/>
+		<br />
+		<label for="longitude">Longitude:</label><input class ="text" type="text" name="long"/>
+		<br />
+		<label for="radius">Radius:</label><input class ="text" type="text" name="radius"/>
+		<br />
+		<input type="radio" name="units" value="mi" checked="true">mi</option>
+		<input type="radio" name="units" value="km">km</opiton>
+		<br />
+		<label for="rpp">RPP:</label><input class ="text" type="text" name="rpp"/>
+		<br />
+		<input type="submit"/>
+	</div>
+</form>
+</body>
+</html>
