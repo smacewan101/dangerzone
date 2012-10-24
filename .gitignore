@@ -1,0 +1,4 @@
+#Ignore class files from java
+*.class
+*.rar
+*.zip
