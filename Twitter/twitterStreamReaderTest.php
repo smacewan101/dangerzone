@@ -1,10 +1,10 @@
 <?php
 
-/*
+
 	//require_once('twitterStreamReader.php');
 	require_once('tmhoauth/tmhOAuth.php');
 	require_once('tmhoauth/tmhUtilities.php');
-
+/*
 	$connection_data = array(
 		'consumer_key' => '0ZpaqIc5dIdQEEtaUYf7wQ',
 		'consumer_private_key' => 'R275pd4ps5zYJX4WAWTZcgDx65wxQ2UrTHREguzILAY',
@@ -49,9 +49,8 @@
   	$OAuth->streaming_request('POST', $method, $params, 'my_streaming_callback');	
   	tmhUtilities::pr($OAuth);
 
-	$tweet_text = 'meeting';
-
-
+*/	
+	//$tweet_text = 'meeting';
 	$connection_data = array(
 		'consumer_key' => '0ZpaqIc5dIdQEEtaUYf7wQ',
 		'consumer_private_key' => 'R275pd4ps5zYJX4WAWTZcgDx65wxQ2UrTHREguzILAY',
@@ -66,9 +65,11 @@
 		echo '<br />';
 	}
 
-*/
+/*
 	require_once('twitterStreamReader.php');
 	$streamReader= new TwitterStreamReader();
 	$streamReader->startStream();
+
+	*/
  
 ?>
