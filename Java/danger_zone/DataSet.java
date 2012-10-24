@@ -69,13 +69,16 @@ public class DataSet{
 		try{
 			//Read in the data
 			while(results.next()){
-				System.out.println(results.getString(3));
-				int id = Integer.parseInt(results.getString(1));
-				String text = results.getString(3);
-				dataset.add(new Training_Tweet(id, text, NaiveBayes.convertBoolToInt(results.getBoolean(8))));
+				long id = Long.parseLong(results.getString(1));
+				String text = results.getString(5);
+
+				dataset.add(new Training_Tweet((int)id, text, NaiveBayes.convertBoolToInt(results.getBoolean(8))));
+
 			}
 		}catch(java.sql.SQLException jSQL){
 			//Do nothing
+			System.out.println(jSQL.getMessage());
+			System.out.println(jSQL.getStackTrace());
 		}finally{
 			//Cut off the results connection
 			results.close();
@@ -118,6 +121,8 @@ public class DataSet{
 			d.initialize();
 			System.out.println(d.getNext());
 			System.out.println(d.getNext());
+			Training_Tweet t = (Training_Tweet)d.getNext();
+			System.out.println(t.getTweetText());
 		}catch(Exception e ){
 			System.out.println("Exception");
 			System.out.println(e.getStackTrace());
