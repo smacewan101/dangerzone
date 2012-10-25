@@ -124,8 +124,6 @@ public class DataSet{
 		DataSet d = new DataSet();
 		try{
 			d.initialize(args[0]);
-			System.out.println(d.getNext());
-			System.out.println(d.getNext());
 			Training_Tweet t = (Training_Tweet)d.getNext();
 			System.out.println(t.getTweetText());
 		}catch(Exception e ){

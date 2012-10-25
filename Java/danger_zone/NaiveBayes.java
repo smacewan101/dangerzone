@@ -32,6 +32,16 @@ public class NaiveBayes{
 	*/
 	private HashMap<Integer, HashMap<String,Integer>> category_count = new HashMap<Integer, HashMap<String,Integer>>();
 
+	/**
+	*Totals of all the counts during training.
+	*/
+	private HashMap<String, Integer> prior_totals = new HashMap<String, Integer>();
+
+	/**
+	*Total count of all things trained on
+	*/
+	private int total_training_size = 0;
+
 	public NaiveBayes(){
 		HashMap<String,Integer> danger = new HashMap<String,Integer>();
 		HashMap<String,Integer> safe = new HashMap<String,Integer>();
@@ -57,7 +67,14 @@ public class NaiveBayes{
 			}
 			int numW = category_count.get(category).get(pt);
 			category_count.get(category).put(pt,numW+1);
-
+			if(prior_totals.containsKey(pt)){
+				prior_totals.put(pt, prior_totals.get(pt) + 1);
+			}else{
+				prior_totals.put(pt,1);
+			}
+			
+			//Increment the total size of the training set.
+			total_training_size++;
 		}
 		//count of pt in cat divided by total count of pt in all categories = probability
 	}
@@ -84,46 +101,50 @@ public class NaiveBayes{
 
 
 		//Initalize a way to keep track of the tweet
-		HashMap<Integer,Integer> tweetClass = new HashMap<Integer,Integer>();
+		HashMap<Integer,Float> tweetClass = new HashMap<Integer,Float>();
 		for (int cat : categories) {
-			tweetClass.put(cat,0);
+			tweetClass.put(cat,(float)0);
 		}
 
-		//Classify each word
+		//Get how often each word appeared during training (in a category)
+		HashMap<Integer, HashMap<String,Float>> priors = new HashMap<Integer, HashMap<String,Float>>();
+		for(int cat : categories){
+			priors.put(cat, new HashMap<String,Float>());
+		}
+
+		//Compute Prior Probabilities
 		for(String pt : parsedTweet){
 			for(int cat : categories){
 				if(category_count.get(cat).containsKey(pt)){
-					//Increase count of the word
-					category_count.get(cat).put(pt,category_count.get(cat).get(pt)+1);
-				}else{
-					category_count.get(cat).put(pt,1);
+					float prob = category_count.get(cat).get(pt)/((float)prior_totals.get(pt));
+					priors.get(cat).put(pt,prob);
 				}
 			}
 		}
 
-		//get the counts of the strings
+
+		//No multiplication by 0
+		float[] probs = new float[categories.length];
+		for(int i=0; i < categories.length; i++){
+			probs[i] = 1;
+		}
+
+		//Compute the probability of the word being in this class.
 		for(String pt : parsedTweet){
-			int total = 0;
 			for(int cat : categories){
-				total = total + category_count.get(cat).get(pt);
-			}
-			//Now apply this to the tweet class
-			for(int cat : categories){
-				//store the probabilities for each word
-				category_count.get(cat).put(pt,category_count.get(cat).get(pt)/total);
+				probs[cat] *= (prior_totals.get(pt) / (float)category_count.get(cat).size());
 			}
 		}
 
-		//Product each string's probability to determine the total probability for the tweet in each category
-		for(String pt : parsedTweet){
-			for(int cat : categories){
-				tweetClass.put(cat,tweetClass.get(cat)*category_count.get(cat).get(pt));
-			}
+		//Multiply by the priorer bit
+		for(int p =0; p < categories.length; p++){
+			 tweetClass.put(p,  probs[p]*category_count.get(p).size()/total_training_size);
 		}
 
 		//Determine the best fitting category
 		int bestFit = 0;
 		for (int cat : categories) {
+			System.out.println(tweetClass.get(cat));
 			if(tweetClass.get(cat) > bestFit){
 				bestFit = cat;
 			}
@@ -136,10 +157,12 @@ public class NaiveBayes{
 	public static void main(String[] args) {
 		NaiveBayes nb = new NaiveBayes();
 
-		nb.train(NaiveBayes.CAT_SAFE,"I love to dance with Kittens");
-		nb.train(NaiveBayes.CAT_DANGER,"There are Kittens on Fire and its terrible those poor Kittens");
+		nb.train(NaiveBayes.CAT_SAFE,"Moving to Georgia");
+		nb.train(NaiveBayes.CAT_SAFE,"Georgia is a lovely place to take a stroll");
+		nb.train(NaiveBayes.CAT_DANGER,"Shooting in Georgia");
+		nb.train(NaiveBayes.CAT_DANGER,"Three people shot in Georgia");
 
-		switch(nb.classify("Kittens on fire")){
+		switch(nb.classify("Shooting in Georgia")){
 			case NaiveBayes.CAT_DANGER:
 				System.out.println("danger");
 				break;
