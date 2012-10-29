@@ -4,8 +4,8 @@ import java.io.*;
 
 /**
 *@author Ethan Eldridge <ejayeldridge @ gmail.com>
-*@version 0.0
-*@since 2012-10-17
+*@version 0.1
+*@since 2012-10-28
 *
 * Naive Bayes classifier to classify a tweet as a danger or not. 
 */
@@ -89,6 +89,9 @@ public class NaiveBayes{
 		//count of pt in cat divided by total count of pt in all categories = probability
 	}
 
+	/**
+	*Converts true into CAT_DANGER and false into CAT_SAFE, this is the only function that would need to change if we changed the values of those constants.
+	*/
 	static public int convertBoolToInt(boolean cat){
 		if(cat){
 			return CAT_DANGER;
