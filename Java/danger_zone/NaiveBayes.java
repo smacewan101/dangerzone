@@ -28,7 +28,7 @@ public class NaiveBayes{
 	private static final int [] categories = {CAT_SAFE,CAT_DANGER};
 
 	/**
-	*Holds The two categories of the data being classified
+	*Holds The two categories of the data being classified, and number of times a given String appears
 	*/
 	private HashMap<Integer, HashMap<String,Integer>> category_count = new HashMap<Integer, HashMap<String,Integer>>();
 
@@ -41,6 +41,16 @@ public class NaiveBayes{
 	*Total count of all things trained on
 	*/
 	private int total_training_size = 0;
+
+	/**
+	*Weight on how much each word in a tweet affects the total probabiliy:
+	*/
+	private float weight = (float)1.00;
+
+	/**
+	*Assumed probability of the word being in any given category.
+	*/
+	private float assumed_prob = (float)0.1;
 
 	public NaiveBayes(){
 		HashMap<String,Integer> danger = new HashMap<String,Integer>();
@@ -99,56 +109,69 @@ public class NaiveBayes{
 		//Each word is classified indenpendtly, whichever one has the most wins. 
 		String [] parsedTweet = tweetStripper.parseTweet(tweet).split(" ");
 
-
-		//Initalize a way to keep track of the tweet
-		HashMap<Integer,Float> tweetClass = new HashMap<Integer,Float>();
-		for (int cat : categories) {
-			tweetClass.put(cat,(float)0);
-		}
-
-		//Get how often each word appeared during training (in a category)
-		HashMap<Integer, HashMap<String,Float>> priors = new HashMap<Integer, HashMap<String,Float>>();
+		//Compute the leading term of category probability:
+		float[] catProb = new float[categories.length];
+		int i = 0;
 		for(int cat : categories){
-			priors.put(cat, new HashMap<String,Float>());
+			catProb[i] = category_count.get(cat).size()/(float)total_training_size;
+			i++;
 		}
 
-		//Compute Prior Probabilities
+		//Compute the number of times a word appears in all categories:
+		HashMap<String, Integer> total_all_classes = new HashMap<String, Integer>();
 		for(String pt : parsedTweet){
 			for(int cat : categories){
-				if(category_count.get(cat).containsKey(pt)){
-					float prob = category_count.get(cat).get(pt)/((float)prior_totals.get(pt));
-					priors.get(cat).put(pt,prob);
+				if(!total_all_classes.containsKey(pt)){
+					if(category_count.get(cat).containsKey(pt)){
+						total_all_classes.put(pt,category_count.get(cat).get(pt));
+					}else{
+						//What happens if we've never seen the word before?
+					}
+				}else{
+					//If we've seen the word before:
+					if(category_count.get(cat).containsKey(pt)){
+						int additional = total_all_classes.get(pt) + category_count.get(cat).get(pt);
+						total_all_classes.put(pt, additional);
+					}else{
+						//I'm skeptical if this will ever be execuated, but what happens if we've never seen the word before?
+					}
 				}
 			}
 		}
 
-
-		//No multiplication by 0
-		float[] probs = new float[categories.length];
-		for(int i=0; i < categories.length; i++){
-			probs[i] = 1;
+		//Create something to hold the probabilities in
+		float[] class_probability = new float[categories.length];
+		//Initalize:
+		for(int c = 0; c < categories.length; c++){
+			class_probability[c] = 1;
 		}
 
-		//Compute the probability of the word being in this class.
-		for(String pt : parsedTweet){
-			for(int cat : categories){
-				probs[cat] *= (prior_totals.get(pt) / (float)category_count.get(cat).size());
+		//Compute the prodcut of the toals with priors and weights and assumed prob.
+		//product of ( #word appears in all class * (#word appears in class c/#words in class c) )+ weight*assumed probability all divided by weight + #words appeared in all classes
+		for(int cat : categories){
+			for(String pt : parsedTweet){
+				if(category_count.get(cat).containsKey(pt) && total_all_classes.containsKey(pt)){ 
+					//This is going to be a terribly long expression sadly.
+					class_probability[cat] *= ((total_all_classes.get(pt)*(category_count.get(cat).get(pt)/(float)category_count.get(cat).size())) + weight*assumed_prob)/(float)(weight + total_all_classes.get(pt));
+				}
 			}
 		}
 
-		//Multiply by the priorer bit
-		for(int p =0; p < categories.length; p++){
-			 tweetClass.put(p,  probs[p]*category_count.get(p).size()/total_training_size);
+		//Multiply the whole term by the leading term of catProb:
+		for(int cat : categories){
+			class_probability[cat]  = catProb[cat]*class_probability[cat];
 		}
 
-		//Determine the best fitting category
-		int bestFit = 0;
-		for (int cat : categories) {
-			System.out.println(tweetClass.get(cat));
-			if(tweetClass.get(cat) > bestFit){
+		//Figure out which class/category is the highest and return the best fitting one.
+		int bestFit = CAT_SAFE; //If can't figure, return that its SAFE? Dunno if this is the best choice
+		int bestProb = -1;
+		for(int cat : categories){
+			if(class_probability[cat] > bestProb){
 				bestFit = cat;
 			}
-		}
+		}		
+
+
 
 		return bestFit;
 
@@ -157,12 +180,12 @@ public class NaiveBayes{
 	public static void main(String[] args) {
 		NaiveBayes nb = new NaiveBayes();
 
-		nb.train(NaiveBayes.CAT_SAFE,"Moving to Georgia");
-		nb.train(NaiveBayes.CAT_SAFE,"Georgia is a lovely place to take a stroll");
-		nb.train(NaiveBayes.CAT_DANGER,"Shooting in Georgia");
-		nb.train(NaiveBayes.CAT_DANGER,"Three people shot in Georgia");
+		nb.train(NaiveBayes.CAT_DANGER,"Syria is under attack");
+		nb.train(NaiveBayes.CAT_DANGER,"Bombs in Syria");
+		nb.train(NaiveBayes.CAT_SAFE,"Syria officials attend a ball");
+		nb.train(NaiveBayes.CAT_SAFE,"Peacetime in Syria");
 
-		switch(nb.classify("Shooting in Georgia")){
+		switch(nb.classify("Attack in Syria a hoax")){
 			case NaiveBayes.CAT_DANGER:
 				System.out.println("danger");
 				break;
