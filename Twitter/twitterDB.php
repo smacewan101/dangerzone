@@ -96,6 +96,18 @@ class TwitterDB{
 		}
 	}
 
+	//Select all new tweets that have not had danger statuses updated
+	public function selectNewTweets(){
+		if(!$this->error){		
+			$selectQuery = 'SELECT * FROM '.$this->tableName.' WHERE danger IS NULL';
+			$selectStatement =$this->con->prepare($selectQuery);
+			$selectStatement->execute();
+			return $selectStatement->fetchall();
+		}else{
+			echo 'No connection to database was established. Verify credentials.';
+			return null;
+		}
+	}
 
 	//grabs the stored tweet information by the specific id string
 	public function selectTweetByID($id_str){
@@ -144,7 +156,7 @@ class TwitterDB{
 
 	//converts the date string given back by a tweet query into a datetime mysql format
 	//input: tweet date string
-	private function tweetDate($date_string){
+	public function tweetDate($date_string){
 		$parsed_date = explode(' ', $date_string);
 		$day = $parsed_date[1];
 		$month = $this->numericMonth($parsed_date[2]);
