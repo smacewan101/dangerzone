@@ -1,5 +1,7 @@
 package danger_zone;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
 *@author Ethan Eldridge <ejayeldridge @ gmail.com>
@@ -17,27 +19,91 @@ public class BayesTrainer{
 	/**
 	*The Dataset to use to train the NaiveBayes instance
 	*/
-	private Dataset data = new Dataset();
+	private DataSet data = new DataSet();
 
-	public initializeData(String password){
+	public boolean initializeData(String password){
 		try{
 			//Open the connection to the database
 			data.initialize(password);
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 			System.out.println(e.getStackTrace());
+			return false;
+		}
+		return true;
+	}
+
+	public void trainBayes(){
+		Training_Tweet tweet = (Training_Tweet)data.getNext();
+		while(tweet != null){
+			//Train based on the bit
+			System.out.println(tweet);
+			bayes.train(tweet.getCategory(),tweet.getTweetText());
+			tweet = (Training_Tweet)data.getNext();
 		}
 	}
 
+	public float validateOn(ArrayList<Training_Tweet> set){
+		//Go through the set and see if the categorys of the tweets
+		//match what the bayes returns. Return a percentage of correctness
+		int total = set.size();
+		int correct = 0;
+		Training_Tweet t;
+		for(int s = 0; s < total; s++){
+			t = set.get(s);
+			int class = t.getCategory();
+			int guess = bayes.classify(t.getTweetText());
+			if(class == guess){
+				correct++;
+			}
+		}
+		return correct/(float)total;
+
+	}
+
+	public void crossValidation(){
+		//K fold cross validation with k=10
+		int size = data.size();
+		int foldSize = size/10;
+		//Break everything into sets
+		ArrayList<List<Training_Tweet>> validationSets = new ArrayList<List<Training_Tweet>>();
+		for(int k = 0; k < 10; k++){
+			//Get the validation sets:
+			List<Training_Tweet> set = new ArrayList<Training_Tweet>();
+			for(int j = 0; j < foldSize; j++){
+				Training_Tweet t = (Training_Tweet)data.getNext();
+				if(t != null){
+					set.add(t)	;
+				}
+			}
+			validationSets.add(set);
+		}
+		//Train with each set and validate?
+		ArrayList<Training_Tweet> validSet;
+		ArrayList<Training_Tweet> set;
+		for(int k=0; k < 10; k++){
+			validSet = validationSets.get(k);
+			for(int j = 0; j < 10; k++){
+				//Don't train on the validation set
+				if(j!=k){
+					set = validationSets.get(j);
+					for(int h = 0; h < set.size(); h++){ 
+						bayes.train(set.get(h).getCategory(),set.get(h).getTweetText());
+					}
+				}
+			}
+			//Validate:
+			System.out.println(validateOn(validSet));
+		}
 
 
-	public run(String password){
+	}
+
+	public void run(String password){
 		//Create the DataSet
 		initializeData(password);
 		//Begin Training the data on everything in the dataset
-		while((Training_Tweet tweet = data.getNext()) != null){
-			//Train based on the bit
-		}
+		crossValidation();
 
 	}
 

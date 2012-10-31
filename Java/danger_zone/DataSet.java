@@ -115,6 +115,13 @@ public class DataSet{
 		}
 	}
 
+	/**
+	*Get the size of the data set
+	*/
+	public int size(){
+		return dataset.size();
+	}
+
 	public static void main(String[] args) {
 		//Command line parameter of password
 		if(args.length < 1){
