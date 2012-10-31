@@ -19,6 +19,10 @@ public class NaiveBayes{
 	*/
 	public static final int CAT_SAFE = 0;
 	/**
+	*Default for a tweet that's probability falls beneath the threshold.
+	*/
+	public static final int DEFAULT_CATEGORY = CAT_DANGER;
+	/**
 	*Lemmatizer instance to strip and parse tweets into a managable form.
 	*/
 	private Lemmatizer tweetStripper = new Lemmatizer();
@@ -50,7 +54,12 @@ public class NaiveBayes{
 	/**
 	*Assumed probability of the word being in any given category.
 	*/
-	private float assumed_prob = (float)0.1;
+	private double assumed_prob = 0.6;
+
+	/**
+	*Threshold value to allow false positives
+	*/
+	private float threshold = (float)0.1;
 
 	public NaiveBayes(){
 		HashMap<String,Integer> danger = new HashMap<String,Integer>();
@@ -167,12 +176,17 @@ public class NaiveBayes{
 
 		//Figure out which class/category is the highest and return the best fitting one.
 		int bestFit = CAT_SAFE; //If can't figure, return that its SAFE? Dunno if this is the best choice
-		int bestProb = -1;
+		float bestProb = -1;
 		for(int cat : categories){
 			if(class_probability[cat] > bestProb){
 				bestFit = cat;
 			}
-		}		
+			System.out.println(class_probability[cat]);
+		}
+		System.out.println(bestProb < threshold);
+		if(bestProb < threshold){
+			bestFit = DEFAULT_CATEGORY;
+		}
 
 
 
@@ -188,7 +202,7 @@ public class NaiveBayes{
 		nb.train(NaiveBayes.CAT_SAFE,"Syria officials attend a ball");
 		nb.train(NaiveBayes.CAT_SAFE,"Peacetime in Syria");
 
-		switch(nb.classify("Attack in Syria a hoax")){
+		switch(nb.classify("Attack in Syria")){
 			case NaiveBayes.CAT_DANGER:
 				System.out.println("danger");
 				break;

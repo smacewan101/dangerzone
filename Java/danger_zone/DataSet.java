@@ -106,6 +106,10 @@ public class DataSet{
 		return true;
 	}
 
+	/**
+	*Gets the next tweet in the dataset. If run out, we return null and recreate the iterator.
+	*@return the next Tweet in this dataset.
+	*/
 	public Tweet getNext(){
 		if(dataIter.hasNext()){
 			return dataIter.next();
