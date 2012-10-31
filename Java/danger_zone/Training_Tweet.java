@@ -68,6 +68,13 @@ public class Training_Tweet extends Tweet{
 		category = cat;
 	}
 
+	/**
+	*Gets the class/category of this tweet.
+	*/
+	public int getCategory(){
+		return this.category;
+	}
+
 
 
 
