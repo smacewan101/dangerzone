@@ -37,7 +37,6 @@ public class BayesTrainer{
 		Training_Tweet tweet = (Training_Tweet)data.getNext();
 		while(tweet != null){
 			//Train based on the bit
-			System.out.println(tweet);
 			bayes.train(tweet.getCategory(),tweet.getTweetText());
 			tweet = (Training_Tweet)data.getNext();
 		}
@@ -51,14 +50,24 @@ public class BayesTrainer{
 		Training_Tweet t;
 		for(int s = 0; s < total; s++){
 			t = set.get(s);
-			int class = t.getCategory();
+			int c = t.getCategory();
 			int guess = bayes.classify(t.getTweetText());
-			if(class == guess){
-				correct++;
+			if(c == guess){
+				correct = correct + 1;
 			}
 		}
+		
 		return correct/(float)total;
+	}
 
+	public float validateOn(){
+		//Create a validation set
+		ArrayList<Training_Tweet> set = new ArrayList<Training_Tweet>();
+		for(int i = 0; i < data.size()/5; i ++){
+			set.add((Training_Tweet)data.getNext());
+		}
+
+		return validateOn(set);
 	}
 
 	public void crossValidation(){
@@ -72,8 +81,8 @@ public class BayesTrainer{
 			List<Training_Tweet> set = new ArrayList<Training_Tweet>();
 			for(int j = 0; j < foldSize; j++){
 				Training_Tweet t = (Training_Tweet)data.getNext();
-				if(t != null){
-					set.add(t)	;
+				if(t != null){	
+					set.add(t);
 				}
 			}
 			validationSets.add(set);
@@ -82,11 +91,11 @@ public class BayesTrainer{
 		ArrayList<Training_Tweet> validSet;
 		ArrayList<Training_Tweet> set;
 		for(int k=0; k < 10; k++){
-			validSet = validationSets.get(k);
-			for(int j = 0; j < 10; k++){
+			validSet = (ArrayList<Training_Tweet>) validationSets.get(k);
+			for(int j = 0; j < 10; j++){
 				//Don't train on the validation set
 				if(j!=k){
-					set = validationSets.get(j);
+					set = (ArrayList<Training_Tweet>)validationSets.get(j);
 					for(int h = 0; h < set.size(); h++){ 
 						bayes.train(set.get(h).getCategory(),set.get(h).getTweetText());
 					}
@@ -104,6 +113,8 @@ public class BayesTrainer{
 		initializeData(password);
 		//Begin Training the data on everything in the dataset
 		crossValidation();
+		//System.out.println(validateOn());
+
 
 	}
 
