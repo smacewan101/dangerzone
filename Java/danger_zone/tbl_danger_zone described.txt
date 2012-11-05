@@ -1,0 +1,12 @@
+
+mysql> describe tbl_danger_zone;
++----------------+---------+------+-----+---------+----------------+
+| Field          | Type    | Null | Key | Default | Extra          |
++----------------+---------+------+-----+---------+----------------+
+| pk_id          | int(11) | NO   | PRI | NULL    | auto_increment |
+| fld_latitude   | float   | YES  |     | NULL    |                |
+| fld_longitude  | float   | YES  |     | NULL    |                |
+| fld_time_stamp | int(11) | YES  |     | NULL    |                |
+| fld_category   | int(11) | YES  |     | NULL    |                |
++----------------+---------+------+-----+---------+----------------+
+
