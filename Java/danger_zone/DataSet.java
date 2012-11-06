@@ -86,6 +86,11 @@ public class DataSet{
 		dataIter = dataset.iterator();
 	}
 
+	public void addTweet(String id, String nuId, String lat, String lon, String text, String created, String somethingelseishouldcontinueherelateron ){
+
+	}
+
+
 	/**
 	*Initalizes the data set to use the database and create an interface for the database.
 	*@return Returns true if initialization succeeded.

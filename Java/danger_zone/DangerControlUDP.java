@@ -42,7 +42,7 @@ public class DangerControlUDP{
 	/**
 	*Port number to communicate to the client with
 	*/
-	int port_number = 5480;
+	static int port_number = 5480;
 	/**
 	*Packet recieved by server from the client
 	*/
@@ -68,9 +68,17 @@ public class DangerControlUDP{
 	}
 
 	/**
+	*Sets the root node to the Danger Node Tree
+	*@param dn The node to the root of the tree.
+	*/
+	public void setRootNode(DangerNode dn){
+		dangerZones = dn;
+	}
+
+	/**
 	*Creates and constructs the tree stored in dangerZones from the database
 	*/
-	public void createTree(){
+	public void createTestTree(){
 		dangerZones = new DangerNode(9,9,1);
 		dangerZones.addNode(new DangerNode(7,2,4));
 		dangerZones.addNode(new DangerNode(12,12,5));

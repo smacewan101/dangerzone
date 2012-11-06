@@ -522,12 +522,10 @@ public class DangerNode{
 	*@param password The password to connect to the database. From command line argument.
 	*@return The root of the newly built and balanced tree.
 	*/
-	static final public ArrayList<DangerNode> fetchDangers(String credentials[]) throws Exception{
+	static final public ArrayList<DangerNode> fetchDangers(String user, String password) throws Exception{
 		// Guide: http://www.java-samples.com/showtutorial.php?tutorialid=9
 
 		String dbUrl = "jdbc:mysql://dangerzone.cems.uvm.edu/DangerZone";
-		String user = credentials[0];
-		String password = credentials[1];
 		String dbClass = "com.mysql.jdbc.Driver";
 		String query = "SELECT * FROM tbl_danger_zone";
 
