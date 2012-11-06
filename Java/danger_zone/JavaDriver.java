@@ -21,6 +21,16 @@ public class JavaDriver{
 	*/
 	static boolean debugOn = true;
 
+	/**
+	*The variable to control how long the DangerControlUDP instance will listen for. If continous running isn't specified
+	*/
+	static int timeout = 30;
+
+	/**
+	*Variable to determine if the DangerControlUDP should continue running until it recieves a Kill Command.
+	*/
+	static boolean continous = false;
+
 	public JavaDriver(){
 		
 	}
@@ -59,6 +69,22 @@ public class JavaDriver{
 		//Initial training of the naive bayes clasifier
 		System.out.println("Creating Clasifier");
 		dcUDP.trainBayes(password,debugOn);
+
+		//Run the dcUDP and let it handle all incoming events and such.
+		System.out.println("Running the Java Server Component");
+		try{ 
+			if(JavaDriver.continous){
+				dcUDP.run(JavaDriver.continous);
+			}else{
+				DangerControlUDP.int_timeout = timeout;
+				dcUDP.run();
+			}
+		}catch(Exception e){
+			System.out.println("ERROR");
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			return;
+		}
 	}
 
 	public static void main(String[] args) {
@@ -117,9 +143,29 @@ public class JavaDriver{
 					System.out.println("Could not parse entered arguments, please enter 0 or 1 for -d argument");
 					return;
 				}
+			}else if(args[i].trim().equals("-c")){
+				try{
+					switch (Integer.parseInt(args[i+1])) {
+						case 1:
+							DangerControlUDP.continous = true;
+							JavaDriver.continous = true;
+							break;
+						default:
+							DangerControlUDP.continous = false;
+							break;
+					}
+
+				}catch(java.lang.IndexOutOfBoundsException out){
+					System.out.println("[1|0] expected if -c specifier is used");
+					return;
+				}catch(java.lang.NumberFormatException nm){
+					System.out.println("Could not parse entered arguments, please enter 0 or 1 for -d argument");
+					return;
+				}
+
 			}else if(args[i].trim().equals("-help")){
 				//Print out the help for this.
-				System.out.println("usage: java JavaDriver -p password -u username [-n integer port number][-d [1|0] debug messages on or off ");
+				System.out.println("usage: java JavaDriver -p password -u username [-n integer port number][-d [1|0] debug messages on or off][-c [1|0] run the server without a timeout (1) or just by time out 0] ");
 				return;
 			}
 		}

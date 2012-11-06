@@ -29,7 +29,10 @@ public class BayesTrainer{
 	public boolean initializeData(String password){
 		try{
 			//Open the connection to the database
-			data.initialize(password);
+			boolean initialized = data.initialize(password);
+			if(!initialized){
+				return false;
+			}
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 			System.out.println(e.getStackTrace());
@@ -136,7 +139,10 @@ public class BayesTrainer{
 	*/
 	public void run(String password,boolean debugOn){
 		//Create the DataSet
-		initializeData(password);
+		if(!initializeData(password)){
+			System.out.println("Failed to Initalize Data Set for Classifier");
+			return;
+		}
 		//Begin Training the data on everything in the dataset
 		//crossValidation();
 		trainBayes();

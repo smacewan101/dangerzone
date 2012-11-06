@@ -26,7 +26,7 @@ public class DangerControlUDP{
 	/**
 	*Timeout for the DangerControl program's clientListener, this must be set in integer form (Seconds)
 	*/
-	int int_timeout = 5;
+	static int int_timeout = 5;
 	/**
 	*Timeout for the DangerControl program itself, this is used during debugging and will probably be removed in release implementations
 	*/
@@ -54,6 +54,11 @@ public class DangerControlUDP{
 	BayesTrainer classifier = new BayesTrainer();
 
 	/**
+	*Variable to control continous listening by the server instead of a time out.
+	*/
+	static boolean continous = false;
+
+	/**
 	*The url that the output of the commands will be send to
 	*/
 	public static final String URL_TO_SEND_TO = "http://localhost/Server/Java/danger_zone/test.php";
@@ -71,8 +76,11 @@ public class DangerControlUDP{
 
 
 	}
+
 	/**
-	*
+	*Trains the instance of the classifier that this Control structure has. 
+	*@param password The password to the database the classifier uses
+	*@param debugOn True if the user wishes for debug messages to print, false if otherwise.
 	*/
 	public void trainBayes(String password,boolean debugOn){
 		classifier.run(password,debugOn);
@@ -98,7 +106,7 @@ public class DangerControlUDP{
 	}
 
 	/**
-	*Run this instance of DangerControl
+	*Run this instance of DangerControl for the specified amount of time as determined by time out.
 	*/
 	public void run() throws Exception{
 		//Fun Fact, Java supports labels. I didn't know Java liked Spaghetti
@@ -110,6 +118,21 @@ public class DangerControlUDP{
 		}
 		//Cleanup
 		clientListener.close();
+	}
+
+	/**
+	*Run the instance of Danger Control continously without a timeout, only a kill message passed or a kill command from the OS will shut down the instance
+	*@param continous True for if the control structure should run the entire time, false will result in this instance not running at all.
+	*/
+	public void run(boolean continous) throws Exception{
+		this.continous = continous;
+		while(this.continous){
+			request = new DatagramPacket(new byte[1024], 1024);
+			this.read(request);
+			
+		}
+		//Cleanup
+		clientListener.close();	
 	}
 
 	/**
