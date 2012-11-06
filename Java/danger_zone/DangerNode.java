@@ -499,7 +499,7 @@ public class DangerNode{
 	*@param nodes The list of nodes to be used in constructing the balanced tree.
 	*@return The root of the newly built and balanced tree.
 	*/
-	final public DangerNode makeTree(ArrayList<DangerNode> nodes){
+	final public static DangerNode makeTree(ArrayList<DangerNode> nodes){
 		//Check if the list is empty
 		if(nodes.isEmpty()){return null;}
 
@@ -589,7 +589,7 @@ public class DangerNode{
 		
 		// ArrayList of DangerNodes to hold the nodes collected from the database.
 		// Fetch the DangerNodes
-		ArrayList<DangerNode> nodes = fetchDangers(args);
+		ArrayList<DangerNode> nodes = fetchDangers(args[0],args[1]);
 
 		System.out.println("Printing fetched nodes.");
 

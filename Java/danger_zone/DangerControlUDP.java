@@ -49,6 +49,11 @@ public class DangerControlUDP{
 	DatagramPacket request = null;
 
 	/**
+	*Classifer interface to allow for feed back to the classifier from incoming command messages.
+	*/
+	BayesTrainer classifier = new BayesTrainer();
+
+	/**
 	*The url that the output of the commands will be send to
 	*/
 	public static final String URL_TO_SEND_TO = "http://localhost/Server/Java/danger_zone/test.php";
@@ -61,10 +66,16 @@ public class DangerControlUDP{
 		clientListener = new DatagramSocket(port_number);
 		//clientListener.setSoTimeout(int_timeout);
 		//Construct the Tree to hold the danger zones (note this should be replaced by a tree building from sql function)
-		this.createTree();
+		this.createTestTree();
 		clientListener.setReuseAddress(true);
 
 
+	}
+	/**
+	*
+	*/
+	public void trainBayes(String password,boolean debugOn){
+		classifier.run(password,debugOn);
 	}
 
 	/**

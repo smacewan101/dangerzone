@@ -134,13 +134,15 @@ public class BayesTrainer{
 	*Runs the BayesTrainer, iniatlizes the database and then trains the bayes on it.
 	*TODO: Make it wait around and classify everything for us via some server socket interactions
 	*/
-	public void run(String password){
+	public void run(String password,boolean debugOn){
 		//Create the DataSet
 		initializeData(password);
 		//Begin Training the data on everything in the dataset
 		//crossValidation();
 		trainBayes();
-		System.out.println(validateOn());
+		if(debugOn){ 
+			System.out.println(validateOn());
+		}
 
 
 	}
@@ -153,7 +155,7 @@ public class BayesTrainer{
 		}
 
 		BayesTrainer bt = new BayesTrainer();
-		bt.run(args[0]);
+		bt.run(args[0],true);
 		
 	}
 

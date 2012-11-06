@@ -1,5 +1,6 @@
 package danger_zone;
 import java.io.*;
+import java.util.ArrayList;
 
 /**
 *@author Ethan Eldridge <ejayeldridge @ gmail.com>
@@ -13,26 +14,51 @@ import java.io.*;
 */
 public class JavaDriver{
 
-	final DangerControlUDP dcUDP;
+	DangerControlUDP dcUDP;
 
-	public JavaDriver(String password, String username){
-		//Initializes the Naive Bayers Runner and UDP Danger Control. 
-		//Let the danger control class run both the tree and the bayes trainer.
-		//The danger control should take commands involving both geo neighbors and for 
-		//bayes to be trained via command line.
+	/**
+	*Debug variable, if specified as true, output messages will be displayed. 
+	*/
+	static boolean debugOn = true;
 
-		//Initalize Control
-		dcUDP = new DangerControlUDP()
-		//Create the tree
-		ArrayList<DangerNode> nodes =  DangerNode.fetchDangers(username,password);
-		dcUDP.setRootNode(DangerNode.makeTree(nodes));
-		//
-
-
+	public JavaDriver(){
+		
 	}
 
-	public void run(){
+	/**
+	*Initializes the Naive Bayers Runner and UDP Danger Control. 
+	*Let the danger control class run both the tree and the bayes trainer.
+	*The danger control should take commands involving both geo neighbors and for 
+	*bayes to be trained via command line.
+	*/
+	public void run(String password, String username){
 
+		//Initalize Control
+		System.out.println("Creating Danger Control Process");
+		try{ 
+			dcUDP = new DangerControlUDP();
+		}catch(Exception e){
+			System.out.println("Could not create the control structure for client server interaction. Printing Trace:");
+			System.out.println(e.getStackTrace());
+			System.out.println("ERROR MESSAGE: " + e.getMessage());
+			System.out.println("Aborting setup");
+			return;
+		}
+		//Create the tree for neighbors
+		System.out.println("Creating Danger Zone Tree");
+		try{
+			ArrayList<DangerNode> nodes =  DangerNode.fetchDangers(username,password);
+			dcUDP.setRootNode(DangerNode.makeTree(nodes));
+		}catch(Exception e){
+			System.out.println("Could not create K-D Tree from the database. Printing Trace:");
+			System.out.println(e.getStackTrace());
+			System.out.println("ERROR MESSAGE: " + e.getMessage());
+			System.out.println("Aborting setup");
+			return;	
+		}
+		//Initial training of the naive bayes clasifier
+		System.out.println("Creating Clasifier");
+		dcUDP.trainBayes(password,debugOn);
 	}
 
 	public static void main(String[] args) {
@@ -73,9 +99,28 @@ public class JavaDriver{
 					System.out.println("Username expected if -u specifier is given");
 					return;
 				}
-			}else if(args[i]).trim().equals("-help")){
+			}else if(args[i].trim().equals("-d")){
+				try{
+					int debug = Integer.parseInt(args[i+1]);
+					switch (debug) {
+						case 1:
+							JavaDriver.debugOn = true;
+							break;
+						default:
+							JavaDriver.debugOn = false;
+							break;
+					}
+				}catch(java.lang.IndexOutOfBoundsException out){
+					System.out.println("[1|0] expected if -d specifier is used");
+					return;
+				}catch(java.lang.NumberFormatException nm){
+					System.out.println("Could not parse entered arguments, please enter 0 or 1 for -d argument");
+					return;
+				}
+			}else if(args[i].trim().equals("-help")){
 				//Print out the help for this.
-				System.out.println("usage: java JavaDriver -p password -u username [-n integer port number]");
+				System.out.println("usage: java JavaDriver -p password -u username [-n integer port number][-d [1|0] debug messages on or off ");
+				return;
 			}
 		}
 
@@ -88,7 +133,7 @@ public class JavaDriver{
 		DangerControlUDP.port_number = portnumber;
 
 		//Construct the Driver given the arguments and run the program
-		JavaDriver jd = new JavaDriver(password,username);
-		jd.run();
+		JavaDriver jd = new JavaDriver();
+		jd.run(password,username);
 	}
 }
