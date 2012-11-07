@@ -355,7 +355,6 @@ class tmhOAuth {
     }
     $this->auth_header = 'OAuth ' . implode(', ', $kv);
     $this->headers['Authorization'] = $this->auth_header;
-    var_dump($this->headers);
   }
 
   /**
