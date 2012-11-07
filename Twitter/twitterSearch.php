@@ -63,5 +63,5 @@ if(is_int($tweets)){
 		}
 		echo '</p>';
 	}
-	//$db->insertTweets($tweets,$twitterQuery->search);	
+	$db->insertTweets($tweets,$twitterQuery->search);	
 }

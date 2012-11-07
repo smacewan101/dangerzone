@@ -45,7 +45,11 @@ class TwitterDB{
 		if(!$this->error){
 			foreach ($tweets as $tweet) {
 				$id_str = $tweet->id_str;
-				$from_user_id = $tweet->from_user_id;
+				if(array_key_exists('from_user_id_str', $tweet)){
+					$from_user_id = $tweet->from_user_id_str;
+				}else{
+					$from_user_id = $tweet->user->id_str;
+				}
 				$text = $tweet->text;
 				if($tweet->geo!=null){
 					$lat = $tweet->geo->coordinates[0];
@@ -53,6 +57,9 @@ class TwitterDB{
 				}else{
 					$lat = null;
 					$long = null;
+				}
+				if($search_string == null){
+					$search_string = '0';
 				}
 				$created_at = $this->tweetdate($tweet->created_at);
 				if(!$this->tweetExists($id_str)){

@@ -80,7 +80,6 @@ require_once('/tmhOAuth/tmhOAuth.php');
 		public function constructSearch(){
 			$searchParams = array($this->keywords, $this->geo, $this->lang, $this->rpp);
 			$this->search = implode('&',$searchParams);
-			echo $this->search;
 		}
 
 		//grabs all the recent tweets from a specific user by their username on twitter
