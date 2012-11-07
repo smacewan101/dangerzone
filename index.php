@@ -12,7 +12,7 @@
 
 	<head>
 		<title>Danger Zone</title>
-		<?php echo '<link rel="stylesheet" href= "'.DOCROOT.'Resources/style.css" type="text/css" />' ?>
+		<?php echo '<link rel="stylesheet" href= "..'.DOCROOT.'Resources/style.css" type="text/css" />' ?>
 		<!-- Lets Not Forget Our Javascript -->
 		<script type="text/Javascript">
 			<!--

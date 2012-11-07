@@ -2,22 +2,22 @@
 //View for the twitter!
 
 class TwitterView{
-	private $xml = null;
+	private $json = null;
 
 	public function __construct($data=null){
-		$this->xml = $data;
+		$this->json = $data;
 		$this->render();
 	}	
 
 	public function render(){
 		//Render nothing if we have no data to render
-		if(is_null($this->xml)){return;}
+		if(is_null($this->json)){return;}
 
-		foreach ($this->xml as $status) {
+		foreach ($this->json as $status) {
 			//Format the Date
 			$datArray = explode(' ',$status->created_at);
-			echo 'Tweet at '. $datArray[3] . ' on ' . $datArray[1] . ' ' . $datArray[2] . ' ' . $datArray[5] . '<br />';
-			echo $this->linkify_tweet($status->text) . '<br /><hr id="tweetrule">';
+			echo 'Tweet created at ' .$status->created_at. '<br />';
+			echo $this->linkify_tweet($status->text).'<br /><hr id="tweetrule">';
 		
 		}
 	}
