@@ -24,6 +24,10 @@ public class CommandParser{
 	*Constant for the number of nodes a query would like returned
 	*/
 	static final String CMD_COUNT = "NUM";
+	/**
+	*Constant for the kill code to the server
+	*/
+	static final String KILL = "KILLSERVER";
 
 	public static void main(String argv[]){
 		String cmd = "LON 91.12 LAT 40.78";
@@ -32,6 +36,9 @@ public class CommandParser{
 		//IF they are really floats then they'll add
 		System.out.println(result[0] + result[1]);
 	}
+
+
+	
 
 	/**
 	*If the command string is of the form LON XXX.XXXX LAT XXX.XXXX then this function will remove the longitude and latitude from the string and return them in a float array. The returning array will have longitude first in the array, and latitude second. 
