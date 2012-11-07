@@ -165,16 +165,24 @@ public class DangerControlUDP{
 	
 		//Loop through incoming message from udp
 		while((line = incomingStream.readLine()) != null){
-			System.out.println(line);
+			this.handleLine(line,request);	
+		}
+		
+	}
+
+	public void handleLine(String line,DatagramPacket request){
+		System.out.println(line);
 			//We should use some type of switch or something to figure out what function to call from the command parser
 			if(line.indexOf(CommandParser.CMD_LON) != -1 && line.indexOf(CommandParser.CMD_LAT) != -1){
 				//Handle the command and respond to it
 				this.dispatchResponse(this.handleGeoCommand(line),request);
 				//Force the stream to spit back to the client
+			}else if(line.trim().equals(CommandParser.KILLSERVER) != -1){
+				//We've found the kill server command in the line, so seppuku.
+				this.continous = false;
+				long_timeout = 0;
 			}
 			//We can extend right here to implement more commands
-		}
-		
 	}
 
 	/**

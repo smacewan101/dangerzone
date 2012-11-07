@@ -25,9 +25,9 @@ public class CommandParser{
 	*/
 	static final String CMD_COUNT = "NUM";
 	/**
-	*Constant for the kill code to the server
+	*Constant for the kill code to the server if the server is running in continous mode. This does not kill the server if the server is running on a time out.
 	*/
-	static final String KILL = "KILLSERVER";
+	static final String KILL = "KILLSERVER0x0000";
 
 	public static void main(String argv[]){
 		String cmd = "LON 91.12 LAT 40.78";
@@ -79,6 +79,5 @@ public class CommandParser{
 		lonlatTuple[2] = cmds.get(CMD_COUNT);
 		
 		return lonlatTuple;
-
 	}
 }
