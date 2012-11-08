@@ -31,6 +31,8 @@ public class JavaDriver{
 	*/
 	static boolean continous = false;
 
+	static boolean usingUDP = false;
+
 	public JavaDriver(){
 		
 	}
@@ -46,7 +48,11 @@ public class JavaDriver{
 		//Initalize Control
 		System.out.println("Creating Danger Control Process");
 		try{ 
-			dcUDP = new DangerControl();
+			if(usingUDP){
+				dcUDP = new DangerControlUDP();
+			}else{
+				dcUDP = new DangerControlTCP();
+			}
 		}catch(Exception e){
 			System.out.println("Could not create the control structure for client server interaction. Printing Trace:");
 			System.out.println(e.getStackTrace());
@@ -77,6 +83,7 @@ public class JavaDriver{
 				dcUDP.run(JavaDriver.continous);
 			}else{
 				DangerControl.int_timeout = timeout;
+				DangerControlUDP.int_timeout = timeout;
 				dcUDP.run();
 			}
 		}catch(Exception e){
@@ -96,6 +103,9 @@ public class JavaDriver{
 		String password = "";
 		String username = "";
 		int portnumber = DangerControlUDP.port_number;
+		if(!usingUDP){
+			portnumber = DangerControlTCP.port_number;
+		}
 
 		//Parse out the arguments from the command line
 		for(int i = 0; i < args.length; i++){
@@ -148,11 +158,13 @@ public class JavaDriver{
 				try{
 					switch (Integer.parseInt(args[i+1])) {
 						case 1:
-							DangerControl.continous = true;
+							DangerControlTCP.continous = true;
+							DangerControlUDP.continous = true;
 							JavaDriver.continous = true;
 							break;
 						default:
-							DangerControl.continous = false;
+							DangerControlUDP.continous = false;
+							DangerControlTCP.continous = false;
 							break;
 					}
 
@@ -164,9 +176,26 @@ public class JavaDriver{
 					return;
 				}
 
+			}else if (args[i].trim().equals("-proc")) {
+				try{
+					switch(args[i+1]){
+						case "U":
+							usingUDP = true;
+							break;
+						case "T":
+							usingUDP = false;
+							break;
+						default:
+							usingUDP = true;
+							break;
+					}
+				}catch(java.lang.IndexOutOfBoundsException out){
+					System.out.println("Protocol expected if -proc specifier given");
+				}
+
 			}else if(args[i].trim().equals("-help")){
 				//Print out the help for this.
-				System.out.println("usage: java JavaDriver -p password -u username [-n integer port number][-d [1|0] debug messages on or off][-c [1|0] run the server without a timeout (1) or just by time out 0] ");
+				System.out.println("usage: java JavaDriver -p password -u username [-n integer port number][-d [1|0] debug messages on or off][-c [1|0] run the server without a timeout (1) or just by time out 0][-proc [U|T]] ");
 				return;
 			}
 		}
@@ -177,7 +206,8 @@ public class JavaDriver{
 		}
 
 		//Set the port number
-		DangerControl.port_number = portnumber;
+		DangerControlTCP.port_number = portnumber;
+		DangerControlUDP.port_number = portnumber;
 
 		//Construct the Driver given the arguments and run the program
 		JavaDriver jd = new JavaDriver();

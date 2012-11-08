@@ -9,26 +9,23 @@ import org.json.simple.JSONObject;
 
 
 
-
 /**
 *@author Ethan Eldridge <ejayeldridge @ gmail.com>
 *@version 0.1
 *@since 2012-10-5
 *
 * KD Tree / Listening Object Interface for the danger zone application.
-* Uses UDP networking because it is expected that the sockets are used for interprocess communication and therefore
-* loss won't be a problem.
+* Provides a wrapper for an interface to the all important Danger Zone K-d(2) Tree
 */
-public class DangerControlUDP  extends DangerControl{
+public class DangerControlTCP extends DangerControl{
 	/**
 	*Debug variable, if specified as true, output messages will be displayed. 
 	*/
 	static boolean debugOn = true;
-
 	/**
 	*Socket to accept incoming queries to the Danger Control interface, listens on port 5480
 	*/
-	DatagramSocket clientListener = null;
+	ServerSocket clientListener = null;
 	/**
 	*Timeout for the DangerControl program's clientListener, this must be set in integer form (Seconds)
 	*/
@@ -50,11 +47,6 @@ public class DangerControlUDP  extends DangerControl{
 	*/
 	static int port_number = 5480;
 	/**
-	*Packet recieved by server from the client
-	*/
-	DatagramPacket request = null;
-
-	/**
 	*Classifer interface to allow for feed back to the classifier from incoming command messages.
 	*/
 	BayesTrainer classifier = new BayesTrainer();
@@ -72,13 +64,12 @@ public class DangerControlUDP  extends DangerControl{
 	/**
 	*Creates an instance of the DangerControl class.
 	*/
-	public DangerControlUDP() throws Exception{
+	public DangerControlTCP() throws Exception{
 		//5480 For Listening, 5481 to send back out
-		clientListener = new DatagramSocket(port_number);
+		clientListener = new ServerSocket(port_number);
 		//clientListener.setSoTimeout(int_timeout);
 		//Construct the Tree to hold the danger zones (note this should be replaced by a tree building from sql function)
-		this.createTestTree();
-		clientListener.setReuseAddress(true);
+		this.createTree();
 
 
 	}
@@ -94,11 +85,70 @@ public class DangerControlUDP  extends DangerControl{
 	}
 
 	/**
+	*TESTING Creates and constructs the tree stored in dangerZones from the database
+	*/
+	public void createTree(){
+		dangerZones = new DangerNode(9,9,1);
+		dangerZones.addNode(new DangerNode(7,2,4));
+		dangerZones.addNode(new DangerNode(12,12,5));
+		dangerZones.addNode(new DangerNode(15,13,6));
+		this.dangerZones = DangerNode.reBalanceTree(dangerZones);
+	}
+
+	/**
+	*Run this instance of DangerControl
+	*/
+	public void run() throws Exception{
+		//Fun Fact, Java supports labels. I didn't know Java liked Spaghetti
+		Running:
+		while(System.currentTimeMillis() < long_timeout){
+			//If we can't listen then just loop around
+			if(!this.listen()){ continue Running; }
+				this.read();
+		}
+		//Cleanup
+		clientListener.close();
+	}
+
+	/**
 	*Sets the root node to the Danger Node Tree
 	*@param dn The node to the root of the tree.
 	*/
 	public void setRootNode(DangerNode dn){
 		dangerZones = dn;
+	}
+
+	/**
+	*Run the instance of Danger Control continously without a timeout, only a kill message passed or a kill command from the OS will shut down the instance
+	*@param continous True for if the control structure should run the entire time, false will result in this instance not running at all.
+	*/
+	public void run(boolean continous) throws Exception{
+		System.out.println("Running Server Continously");
+		DangerControl.continous = continous;
+		Running:
+		while(DangerControl.continous){
+			System.out.println(DangerControl.continous);
+			if(!this.listen()){ continue Running; }
+				this.read();
+			
+		}
+		//Cleanup
+	
+		clientListener.close();	
+		
+	}
+
+	/**
+	*Opens the ServerSocket clientListener to accept incoming data
+	*@return Returns true if the socket is able to listen, false if otherwise.
+	*/
+	public boolean listen(){
+		try{
+			incoming = clientListener.accept();
+			return true;
+		}catch(IOException e){
+			return false;
+		}	
 	}
 
 	/**
@@ -112,83 +162,31 @@ public class DangerControlUDP  extends DangerControl{
 		this.dangerZones = DangerNode.reBalanceTree(dangerZones);
 	}
 
-	/**
-	*Run this instance of DangerControl for the specified amount of time as determined by time out.
-	*/
-	public void run() throws Exception{
-		System.out.println("Running Server with Timeout");
-		//Fun Fact, Java supports labels. I didn't know Java liked Spaghetti
-		Running:
-		while(System.currentTimeMillis() < long_timeout){
-			request = new DatagramPacket(new byte[1024], 1024);
-			this.read(request);
-			
-		}
-		//Cleanup
-		clientListener.close();
-		///Commit any changes to databases here
-		
-	}
-
-	/**
-	*Run the instance of Danger Control continously without a timeout, only a kill message passed or a kill command from the OS will shut down the instance
-	*@param continous True for if the control structure should run the entire time, false will result in this instance not running at all.
-	*/
-	public void run(boolean continous) throws Exception{
-		System.out.println("Running Server Continously");
-		DangerControlUDP.continous = continous;
-		while(DangerControlUDP.continous){
-			request = new DatagramPacket(new byte[1024], 1024);
-			System.out.println("Reading Packet");
-			this.read(request);
-			
-		}
-		//Cleanup
-		clientListener.close();	
-		classifier.close();
-	}
 
 	/**
 	*Readings incoming messages and calls the dispatcher to send responses
 	*/
-	public void read(DatagramPacket request) throws Exception{
+	public void read() throws Exception{
+		//Read incoming messages with autoflushing printwriter
+		BufferedReader info = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
+		DataOutputStream responseStream = new DataOutputStream(incoming.getOutputStream());
+		String msg;
+
 		
-
-		// Block until the host receives a UDP packet.
-	    clientListener.receive(request);
-
-		// Obtain references to the packet's array of bytes.
-      	byte[] buf = request.getData();
-
-      	// Wrap the bytes in a byte array input stream,
-      	// so that you can read the data as a stream of bytes.
-      	ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-
-      	// Wrap the byte array output stream in an input stream reader,
-      	// so you can read the data as a stream of characters.
-      	InputStreamReader isr = new InputStreamReader(bais);
-
-      	// Wrap the input stream reader in a bufferred reader,
-      	// so you can read the character data a line at a time.
-      	// (A line is a sequence of chars terminated by any combination of \r and \n.) 
-      	BufferedReader incomingStream = new BufferedReader(isr);
-
-      	// The message data is contained in a single line, so read this line.
-      	String line;
-	
-		//Loop through incoming message from udp
-		
-		while((line = incomingStream.readLine()) != null){
-			System.out.println(line);
-			this.handleLine(line,request);	
+		while((msg = info.readLine()) != null){
+			System.out.println(msg);
+			handleLine(msg,responseStream);
+			//We can extend right here to implement more commands
 		}
-		
+		//Close the incoming stream
+		incoming.close();
+		info.close();
 	}
 
-	public void read() throws Exception{}
-	public void handleLine(String line,DataOutputStream request){}
+	public void handleLine(String line,DatagramPacket request){}
+	public void read(DatagramPacket request) throws Exception{}
 
-	public void handleLine(String line,DatagramPacket request){
+	public void handleLine(String line,DataOutputStream request){
 		
 			//We should use some type of switch or something to figure out what function to call from the command parser
 			if(line.indexOf(CommandParser.CMD_LON) != -1 && line.indexOf(CommandParser.CMD_LAT) != -1){
@@ -203,7 +201,7 @@ public class DangerControlUDP  extends DangerControl{
 			}else if(line.trim().equals(CommandParser.KILL)){
 				//We've found the kill server command in the line, so seppuku.
 				System.out.println("Recieved Kill Code");
-				DangerControlUDP.continous = false;
+				DangerControl.continous = false;
 				long_timeout = 0;
 			}
 			//We can extend right here to implement more commands
@@ -213,20 +211,16 @@ public class DangerControlUDP  extends DangerControl{
 	*Dispatches a response back to the client of the nearest neighbors to the point they asked for.
 	*@param neighbors The nearest zones returned by the search for the tree
 	*/
-	public void dispatchResponse(Stack<DangerNode> neighbors,DatagramPacket responseStream) throws Exception{
+	public void dispatchResponse(Stack<DangerNode> neighbors,DataOutputStream responseStream) throws Exception{
 		//Lets send the response as a json array of the nodes
 		JSONObject response = new JSONObject();
 		response.put("neighbors", neighbors);
-		// Send reply.
-	    InetAddress clientHost = request.getAddress();
-	    int clientPort = request.getPort();
-	    byte[] buf = (response.toString() + "\0").getBytes();
-	    DatagramPacket reply = new DatagramPacket(buf, buf.length, clientHost, clientPort);
-	    clientListener.send(reply);
+		//System.out.println(response);
+		responseStream.writeBytes(response.toString()+"\0");
+		responseStream.flush();	
 	}
 
-	public void dispatchResponse(Stack<DangerNode> neighbors,DataOutputStream responseStream) throws Exception{
-	}
+	public void dispatchResponse(Stack<DangerNode> neighbors,DatagramPacket responseStream) throws Exception{}
 
 	/**
 	*Parses a command in the GEO COMMAND format, will return the results of searching the tree for the specified coordinate and number of near zones
@@ -252,10 +246,8 @@ public class DangerControlUDP  extends DangerControl{
 
 	public static void main(String argv[]) throws Exception
 	{
-		
-		DangerControlUDP control = new DangerControlUDP();		
+		DangerControlTCP control = new DangerControlTCP();		
 		control.run();
-
 
 	}
 
