@@ -561,6 +561,10 @@ public class DangerNode{
 				fetchedList.add(node);
 			}//end while
 
+			stmt.close();
+			con.close();
+			System.out.print("Closing connection for Tree");
+
 			return fetchedList;
 
 		}//end try

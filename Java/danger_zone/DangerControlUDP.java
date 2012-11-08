@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 
 
 
+
 /**
 *@author Ethan Eldridge <ejayeldridge @ gmail.com>
 *@version 0.1
@@ -19,6 +20,11 @@ import org.json.simple.JSONObject;
 * loss won't be a problem.
 */
 public class DangerControlUDP{
+	/**
+	*Debug variable, if specified as true, output messages will be displayed. 
+	*/
+	static boolean debugOn = true;
+
 	/**
 	*Socket to accept incoming queries to the Danger Control interface, listens on port 5480
 	*/
@@ -84,6 +90,7 @@ public class DangerControlUDP{
 	*/
 	public void trainBayes(String password,boolean debugOn){
 		classifier.run(password,debugOn);
+		classifier.close();
 	}
 
 	/**
@@ -109,6 +116,7 @@ public class DangerControlUDP{
 	*Run this instance of DangerControl for the specified amount of time as determined by time out.
 	*/
 	public void run() throws Exception{
+		System.out.println("Running Server with Timeout");
 		//Fun Fact, Java supports labels. I didn't know Java liked Spaghetti
 		Running:
 		while(System.currentTimeMillis() < long_timeout){
@@ -118,6 +126,8 @@ public class DangerControlUDP{
 		}
 		//Cleanup
 		clientListener.close();
+		///Commit any changes to databases here
+		
 	}
 
 	/**
@@ -125,14 +135,17 @@ public class DangerControlUDP{
 	*@param continous True for if the control structure should run the entire time, false will result in this instance not running at all.
 	*/
 	public void run(boolean continous) throws Exception{
-		this.continous = continous;
-		while(this.continous){
+		System.out.println("Running Server Continously");
+		DangerControlUDP.continous = continous;
+		while(DangerControlUDP.continous){
 			request = new DatagramPacket(new byte[1024], 1024);
+			System.out.println("Reading Packet");
 			this.read(request);
 			
 		}
 		//Cleanup
 		clientListener.close();	
+		classifier.close();
 	}
 
 	/**
@@ -164,14 +177,16 @@ public class DangerControlUDP{
       	String line;
 	
 		//Loop through incoming message from udp
+		
 		while((line = incomingStream.readLine()) != null){
+			System.out.println(line);
 			this.handleLine(line,request);	
 		}
 		
 	}
 
 	public void handleLine(String line,DatagramPacket request){
-		System.out.println(line);
+		
 			//We should use some type of switch or something to figure out what function to call from the command parser
 			if(line.indexOf(CommandParser.CMD_LON) != -1 && line.indexOf(CommandParser.CMD_LAT) != -1){
 				//Handle the command and respond to it
@@ -184,7 +199,8 @@ public class DangerControlUDP{
 				//Force the stream to spit back to the client
 			}else if(line.trim().equals(CommandParser.KILL)){
 				//We've found the kill server command in the line, so seppuku.
-				this.continous = false;
+				System.out.println("Recieved Kill Code");
+				DangerControlUDP.continous = false;
 				long_timeout = 0;
 			}
 			//We can extend right here to implement more commands
@@ -201,7 +217,7 @@ public class DangerControlUDP{
 		// Send reply.
 	    InetAddress clientHost = request.getAddress();
 	    int clientPort = request.getPort();
-	    byte[] buf = response.toString().getBytes();
+	    byte[] buf = (response.toString() + "\0").getBytes();
 	    DatagramPacket reply = new DatagramPacket(buf, buf.length, clientHost, clientPort);
 	    clientListener.send(reply);
 	}
@@ -230,8 +246,10 @@ public class DangerControlUDP{
 
 	public static void main(String argv[]) throws Exception
 	{
-		DangerControl control = new DangerControl();		
+		
+		DangerControlUDP control = new DangerControlUDP();		
 		control.run();
+
 
 	}
 

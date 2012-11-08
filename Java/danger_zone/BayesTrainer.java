@@ -127,7 +127,7 @@ public class BayesTrainer{
 				}
 			}
 			//Validate:
-			System.out.println(validateOn(validSet));
+			//System.out.println(validateOn(validSet));
 		}
 
 
@@ -151,6 +151,10 @@ public class BayesTrainer{
 		}
 
 
+	}
+
+	public void close(){
+		data.close();
 	}
 
 	public static void main(String[] args) {

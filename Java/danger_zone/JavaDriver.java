@@ -14,12 +14,12 @@ import java.util.ArrayList;
 */
 public class JavaDriver{
 
-	DangerControlUDP dcUDP;
+	DangerControl dcUDP;
 
 	/**
 	*Debug variable, if specified as true, output messages will be displayed. 
 	*/
-	static boolean debugOn = true;
+	static boolean debugOn = false;
 
 	/**
 	*The variable to control how long the DangerControlUDP instance will listen for. If continous running isn't specified
@@ -46,7 +46,7 @@ public class JavaDriver{
 		//Initalize Control
 		System.out.println("Creating Danger Control Process");
 		try{ 
-			dcUDP = new DangerControlUDP();
+			dcUDP = new DangerControl();
 		}catch(Exception e){
 			System.out.println("Could not create the control structure for client server interaction. Printing Trace:");
 			System.out.println(e.getStackTrace());
@@ -76,7 +76,7 @@ public class JavaDriver{
 			if(JavaDriver.continous){
 				dcUDP.run(JavaDriver.continous);
 			}else{
-				DangerControlUDP.int_timeout = timeout;
+				DangerControl.int_timeout = timeout;
 				dcUDP.run();
 			}
 		}catch(Exception e){
@@ -86,6 +86,7 @@ public class JavaDriver{
 			return;
 		}
 	}
+
 
 	public static void main(String[] args) {
 		//Arguments:
@@ -147,11 +148,11 @@ public class JavaDriver{
 				try{
 					switch (Integer.parseInt(args[i+1])) {
 						case 1:
-							DangerControlUDP.continous = true;
+							DangerControl.continous = true;
 							JavaDriver.continous = true;
 							break;
 						default:
-							DangerControlUDP.continous = false;
+							DangerControl.continous = false;
 							break;
 					}
 
@@ -176,7 +177,7 @@ public class JavaDriver{
 		}
 
 		//Set the port number
-		DangerControlUDP.port_number = portnumber;
+		DangerControl.port_number = portnumber;
 
 		//Construct the Driver given the arguments and run the program
 		JavaDriver jd = new JavaDriver();

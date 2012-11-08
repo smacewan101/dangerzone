@@ -103,6 +103,8 @@ public class DataSet{
 			System.out.println("got data");
 			constructTrainingDataSet(data);	
 			System.out.println("constructed");
+			close();
+			System.out.println("Disconnecting DataSet");
 		}catch(Exception e){
 			System.out.println("Exception: ");
 			System.out.println(e.getStackTrace() + " " + e.getMessage());
@@ -129,6 +131,14 @@ public class DataSet{
 	*/
 	public int size(){
 		return dataset.size();
+	}
+
+	public void close(){
+		try{ 
+			con.close();
+		}catch(SQLException sql){
+			System.out.println("Problem closing the connection to the database");
+		}
 	}
 
 	public static void main(String[] args) {

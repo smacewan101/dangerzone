@@ -19,13 +19,17 @@ import org.json.simple.JSONObject;
 */
 public class DangerControl{
 	/**
+	*Debug variable, if specified as true, output messages will be displayed. 
+	*/
+	static boolean debugOn = true;
+	/**
 	*Socket to accept incoming queries to the Danger Control interface, listens on port 5480
 	*/
 	ServerSocket clientListener = null;
 	/**
 	*Timeout for the DangerControl program's clientListener, this must be set in integer form (Seconds)
 	*/
-	int int_timeout = 5;
+	static int int_timeout = 5;
 	/**
 	*Timeout for the DangerControl program itself, this is used during debugging and will probably be removed in release implementations
 	*/
@@ -38,6 +42,19 @@ public class DangerControl{
 	*Data Structure to hold the dangerZones from the database. 
 	*/
 	DangerNode dangerZones = null;
+	/**
+	*Port number to communicate to the client with
+	*/
+	static int port_number = 5480;
+	/**
+	*Classifer interface to allow for feed back to the classifier from incoming command messages.
+	*/
+	BayesTrainer classifier = new BayesTrainer();
+
+	/**
+	*Variable to control continous listening by the server instead of a time out.
+	*/
+	static boolean continous = false;
 
 	/**
 	*The url that the output of the commands will be send to
@@ -58,7 +75,17 @@ public class DangerControl{
 	}
 
 	/**
-	*Creates and constructs the tree stored in dangerZones from the database
+	*Trains the instance of the classifier that this Control structure has. 
+	*@param password The password to the database the classifier uses
+	*@param debugOn True if the user wishes for debug messages to print, false if otherwise.
+	*/
+	public void trainBayes(String password,boolean debugOn){
+		classifier.run(password,debugOn);
+		classifier.close();
+	}
+
+	/**
+	*TESTING Creates and constructs the tree stored in dangerZones from the database
 	*/
 	public void createTree(){
 		dangerZones = new DangerNode(9,9,1);
@@ -81,6 +108,33 @@ public class DangerControl{
 		}
 		//Cleanup
 		clientListener.close();
+	}
+
+	/**
+	*Sets the root node to the Danger Node Tree
+	*@param dn The node to the root of the tree.
+	*/
+	public void setRootNode(DangerNode dn){
+		dangerZones = dn;
+	}
+
+	/**
+	*Run the instance of Danger Control continously without a timeout, only a kill message passed or a kill command from the OS will shut down the instance
+	*@param continous True for if the control structure should run the entire time, false will result in this instance not running at all.
+	*/
+	public void run(boolean continous) throws Exception{
+		System.out.println("Running Server Continously");
+		DangerControl.continous = continous;
+		Running:
+		while(DangerControl.continous){
+			System.out.println(DangerControl.continous);
+			if(!this.listen()){ continue Running; }
+				this.read();
+			
+		}
+		//Cleanup
+		clientListener.close();	
+		
 	}
 
 	/**
@@ -108,22 +162,33 @@ public class DangerControl{
 		
 		while((msg = info.readLine()) != null){
 			System.out.println(msg);
-			//We should use some type of switch or something to figure out what function to call from the command parser
-			if(msg.indexOf(CommandParser.CMD_LON) != -1 && msg.indexOf(CommandParser.CMD_LAT) != -1){
-				//Handle the command and respond to it
-				this.dispatchResponse(this.handleGeoCommand(msg),responseStream);
-				//Force the stream to spit back to the client
-				incoming.shutdownOutput();
-				incoming = clientListener.accept();
-				responseStream = new DataOutputStream(incoming.getOutputStream());
-				
-				
-			}
+			handleLine(msg,responseStream);
 			//We can extend right here to implement more commands
 		}
 		//Close the incoming stream
 		incoming.close();
 		info.close();
+	}
+
+	public void handleLine(String line,DataOutputStream request){
+		
+			//We should use some type of switch or something to figure out what function to call from the command parser
+			if(line.indexOf(CommandParser.CMD_LON) != -1 && line.indexOf(CommandParser.CMD_LAT) != -1){
+				//Handle the command and respond to it
+				try{ 
+					this.dispatchResponse(this.handleGeoCommand(line),request);
+				}catch(Exception e){
+					System.out.println("Error handling Geo Command: \"" + line + "\" is not properly formed");
+					System.out.println(e.getMessage());
+				}
+				//Force the stream to spit back to the client
+			}else if(line.trim().equals(CommandParser.KILL)){
+				//We've found the kill server command in the line, so seppuku.
+				System.out.println("Recieved Kill Code");
+				DangerControl.continous = false;
+				long_timeout = 0;
+			}
+			//We can extend right here to implement more commands
 	}
 
 	/**
@@ -135,7 +200,7 @@ public class DangerControl{
 		JSONObject response = new JSONObject();
 		response.put("neighbors", neighbors);
 		//System.out.println(response);
-		responseStream.writeBytes(response.toString());
+		responseStream.writeBytes(response.toString()+"\0");
 		responseStream.flush();	
 	}
 
