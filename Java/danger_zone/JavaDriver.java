@@ -178,16 +178,10 @@ public class JavaDriver{
 
 			}else if (args[i].trim().equals("-proc")) {
 				try{
-					switch(args[i+1]){
-						case "U":
-							usingUDP = true;
-							break;
-						case "T":
-							usingUDP = false;
-							break;
-						default:
-							usingUDP = true;
-							break;
+					if(args[i+1].trim().equals("T")){
+						usingUDP = false;
+					}else{
+						usingUDP = true;
 					}
 				}catch(java.lang.IndexOutOfBoundsException out){
 					System.out.println("Protocol expected if -proc specifier given");

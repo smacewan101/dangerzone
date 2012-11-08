@@ -2,7 +2,7 @@
 //Danger Socket Test
 
 //Send Text of "LON 91.12 LAT 40.78"
-$host ="127.0.0.1";  
+$host ="dangerzone.cems.uvm.edu";  
 $hostport = 5480;  
 
 $sock = stream_socket_client($host . ':' . $hostport,$errno,$errstr,10);
