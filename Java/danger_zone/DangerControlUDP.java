@@ -205,15 +205,21 @@ public class DangerControlUDP  extends DangerControl{
 				System.out.println("Recieved Kill Code");
 				DangerControlUDP.continous = false;
 				long_timeout = 0;
+			}else if(line.indexOf(CommandParser.CMD_CLASSIFY)!=-1){
+				this.handleClassify(line);
 			}
 			//We can extend right here to implement more commands
+	}
+
+	public void handleClassify(String line){
+
 	}
 
 	/**
 	*Dispatches a response back to the client of the nearest neighbors to the point they asked for.
 	*@param neighbors The nearest zones returned by the search for the tree
 	*/
-	public void dispatchResponse(Stack<DangerNode> neighbors,DatagramPacket responseStream) throws Exception{
+	public void dispatchResponse(Stack<DangerNode> neighbors,DatagramPacket request) throws Exception{
 		//Lets send the response as a json array of the nodes
 		JSONObject response = new JSONObject();
 		response.put("neighbors", neighbors);
