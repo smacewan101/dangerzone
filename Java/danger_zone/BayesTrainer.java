@@ -54,6 +54,10 @@ public class BayesTrainer{
 		}
 	}
 
+	public int classify(String tweet){
+		return bayes.classify(tweet);
+	}
+
 	/**
 	*Checks to see the percentage correct on a set of training tweets. 
 	*@param set Arraylist of Training Tweets to validate the bayes on. 

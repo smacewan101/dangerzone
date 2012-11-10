@@ -206,13 +206,53 @@ public class DangerControlUDP  extends DangerControl{
 				DangerControlUDP.continous = false;
 				long_timeout = 0;
 			}else if(line.indexOf(CommandParser.CMD_CLASSIFY)!=-1){
-				this.handleClassify(line);
+				//Handle the classification
+				String cat = this.handleClassify(CommandParser.parseClassifyCommand(line));
+				try{ 	
+					switch(cat){
+						case "D":
+							this.dispatchClassResponse("Dangerous",request);
+							break;
+						case "S":
+							this.dispatchClassResponse("Safe",request);
+							break;
+						default:
+							this.dispatchClassResponse("Ill formed request",request);
+							break;
+					}
+				}catch(Exception e){
+					System.out.println("Error handling Classification Command: \"" + line + "\" is not properly formed");
+					System.out.println(e.getMessage());	
+				}
 			}
 			//We can extend right here to implement more commands
 	}
 
-	public void handleClassify(String line){
+	public void dispatchClassResponse(String responseString, DatagramPacket request) throws Exception{
+		JSONObject response = new JSONObject();
+		response.put("Response", responseString);
+		InetAddress clientHost = request.getAddress();
+		int clientPort = request.getPort();
+		byte[] buf = (response.toString() + "\0").getBytes();
+	    DatagramPacket reply = new DatagramPacket(buf, buf.length, clientHost, clientPort);
+	    clientListener.send(reply);
+	}
 
+	/**
+	*Classifies the tweet from the passed in line using the classifier.
+	*@param line The line to be classified
+	*@result Returns a D or S depending on the category the line is classified into, or an empty string if the category is not recognized.
+	*/
+	public String handleClassify(String line){
+		int cat = classifier.classify(line);
+		switch(cat){
+			case NaiveBayes.CAT_DANGER:
+				return "D";
+			case NaiveBayes.CAT_SAFE:
+				return "S";
+			default:
+				return "";
+		}
 	}
 
 	/**
