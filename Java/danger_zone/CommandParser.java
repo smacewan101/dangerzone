@@ -10,6 +10,10 @@ import java.util.HashMap;
 * The CommandParser is a static class that contains the constants CMD_LON and CMD_LAT which correspond to the
 *format of the geo command to be interpreted. 
 *GEO FORMAT: LON XXX.XXXXXX LAT XXX.XXXXXXX where X's are numeric and to any precision.
+*GEO FORMAT: LON XXX.XXXXXX LAT XXX.XXXXXXX NUM XXX where NUM specifies up to how many nodes you would like returned.
+*KILL CODE: KILLSERVER0x0000
+*CLASSIFY DET  TEXT   Classifier will classify the text and return which category it is in, D or S for danger or safe.
+*TRAIN [D|S] TEXT classify given text as dangerous or safe, D will specify the text as Dangerouns and S as Safe.
 */
 public class CommandParser{
 	/**
@@ -28,6 +32,31 @@ public class CommandParser{
 	*Constant for the kill code to the server if the server is running in continous mode. This does not kill the server if the server is running on a time out.
 	*/
 	static final String KILL = "KILLSERVER0x0000";
+	/**
+	*Constant for the command to classify
+	*/
+	static final String CMD_CLASSIFY = "CLASSIFY";
+	/**
+	*Constant for the classify option to add the class of the text as specified
+	*/
+	static final String OPT_TRAIN = "TRAIN";
+	/**
+	*Constant for the classify option ADD to have texted be add as dangerous text
+	*/
+	static final String OPT_DANGER = "D";
+	/**
+	*Constant for the classify option ADD to have text be added as safe text.
+	*/
+	static final String OPT_SAFE = "S";
+	/**
+	*Constant for the classify option to add some text as a category
+	*/
+	static final String OPT_DET = "DET";
+	/**
+	*Constant for the determine class of text option in the CLASSIFY command.
+	*/
+
+
 
 	public static void main(String argv[]){
 		String cmd = "LON 91.12 LAT 40.78";
@@ -80,4 +109,27 @@ public class CommandParser{
 		
 		return lonlatTuple;
 	}
+
+	/**
+	*Parses a classifying command and returns the text to be classified. Returns an empty string upon failing to read the text
+	*@param command The command to be parsed as a clasifier command.
+	*@return Returns the text to be classified on success or an empty string on failure.
+	*/
+	public static String parseClassifyCommand(String command){
+		String [] parts;
+		parts = command.split(" ");
+		if(parts[0] == CMD_CLASSIFY){
+			if(parts.length > 1){
+				//Run the string together
+				String text ="";
+				for(int i = 1; i < parts.length; i++){
+					text += parts[i];
+				}
+				return text;
+			}
+		}
+		return "";
+	}
+
+
 }
