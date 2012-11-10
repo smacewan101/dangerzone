@@ -39,7 +39,7 @@ public class CommandParser{
 	/**
 	*Constant for the classify option to add the class of the text as specified
 	*/
-	static final String OPT_TRAIN = "TRAIN";
+	static final String CMD_TRAIN = "TRAIN";
 	/**
 	*Constant for the classify option ADD to have texted be add as dangerous text
 	*/
@@ -131,5 +131,28 @@ public class CommandParser{
 		return "";
 	}
 
+	/**
+	*Parse a training comand into the form of CLASS TEXT... and returns it in a string array with the class in the first element and the text in the other. If the class or text is invalid both elements will be empty strings.
+	*@param command The command to be parsed as a training command
+	*@return A 2 element array with class of the text in the first element and the text in the second. If invalid elements
+	*/
+	public static String[] parseTrainCommand(String command){
+		String [] parts;
+		String [] elements = new String[]{"",""};
+		parts =command.split(" ");
+		if(parts[0] == CMD_TRAIN){
+			if(parts.length > 1){
+				if(parts[1]==OPT_DANGER || parts[1]==OPT_SAFE){
+					String build = "";
+					for(int i = 2; i < parts.length; i++){
+						build += parts[i];
+					}
+					elements[0] = parts[1];
+					elements[1] = build;
+				}
+			}
+		}
+		return elements;
+	}
 
 }
