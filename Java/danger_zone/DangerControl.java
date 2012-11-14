@@ -17,7 +17,11 @@ import org.json.simple.JSONObject;
 * KD Tree / Listening Object Interface for the danger zone application.
 * Provides a wrapper for an interface to the all important Danger Zone K-d(2) Tree
 */
-public class DangerControl{
+public abstract class DangerControl{
+	/**
+	*Debug variable, if specified as true, output messages will be displayed. 
+	*/
+	static boolean debugOn = true;
 	/**
 	*Socket to accept incoming queries to the Danger Control interface, listens on port 5480
 	*/
@@ -25,7 +29,7 @@ public class DangerControl{
 	/**
 	*Timeout for the DangerControl program's clientListener, this must be set in integer form (Seconds)
 	*/
-	int int_timeout = 5;
+	static int int_timeout = 5;
 	/**
 	*Timeout for the DangerControl program itself, this is used during debugging and will probably be removed in release implementations
 	*/
@@ -38,134 +42,47 @@ public class DangerControl{
 	*Data Structure to hold the dangerZones from the database. 
 	*/
 	DangerNode dangerZones = null;
+	/**
+	*Port number to communicate to the client with
+	*/
+	static int port_number = 5480;
+	/**
+	*Classifer interface to allow for feed back to the classifier from incoming command messages.
+	*/
+	BayesTrainer classifier = new BayesTrainer();
 
 	/**
-	*The url that the output of the commands will be send to
+	*Variable to control continous listening by the server instead of a time out.
 	*/
-	public static final String URL_TO_SEND_TO = "http://localhost/Server/Java/danger_zone/test.php";
+	static boolean continous = false;
+
+	public abstract void trainBayes(String password,boolean debugOn);
+	public abstract void setRootNode(DangerNode dn);
+	public abstract void createTestTree();
+	public abstract void run() throws Exception;
+	public abstract void run(boolean continous) throws Exception;
+	public abstract void read(DatagramPacket request) throws Exception;
+	public abstract void read() throws Exception;
+	public abstract void handleLine(String line,DatagramPacket request);
+	public abstract void dispatchResponse(Stack<DangerNode> neighbors,DatagramPacket responseStream) throws Exception;
+	public abstract Stack<DangerNode> handleGeoCommand(String geoCommand);
+	public abstract void dispatchResponse(Stack<DangerNode> neighbors,DataOutputStream responseStream) throws Exception;
+	public abstract void handleLine(String line,DataOutputStream request);
 
 	/**
-	*Creates an instance of the DangerControl class.
+	*Classifies the tweet from the passed in line using the classifier.
+	*@param line The line to be classified
+	*@result Returns a D or S depending on the category the line is classified into, or an empty string if the category is not recognized.
 	*/
-	public DangerControl() throws Exception{
-		//5480 For Listening, 5481 to send back out
-		clientListener = new ServerSocket(5480);
-		//clientListener.setSoTimeout(int_timeout);
-		//Construct the Tree to hold the danger zones (note this should be replaced by a tree building from sql function)
-		this.createTree();
-
-
-	}
-
-	/**
-	*Creates and constructs the tree stored in dangerZones from the database
-	*/
-	public void createTree(){
-		dangerZones = new DangerNode(9,9,1);
-		dangerZones.addNode(new DangerNode(7,2,4));
-		dangerZones.addNode(new DangerNode(12,12,5));
-		dangerZones.addNode(new DangerNode(15,13,6));
-		this.dangerZones = DangerNode.reBalanceTree(dangerZones);
-	}
-
-	/**
-	*Run this instance of DangerControl
-	*/
-	public void run() throws Exception{
-		//Fun Fact, Java supports labels. I didn't know Java liked Spaghetti
-		Running:
-		while(System.currentTimeMillis() < long_timeout){
-			//If we can't listen then just loop around
-			if(!this.listen()){ continue Running; }
-				this.read();
+	public String handleClassify(String line){
+		int cat = classifier.classify(line);
+		switch(cat){
+			case NaiveBayes.CAT_DANGER:
+				return "D";
+			case NaiveBayes.CAT_SAFE:
+				return "S";
+			default:
+				return "";
 		}
-		//Cleanup
-		clientListener.close();
 	}
-
-	/**
-	*Opens the ServerSocket clientListener to accept incoming data
-	*@return Returns true if the socket is able to listen, false if otherwise.
-	*/
-	public boolean listen(){
-		try{
-			incoming = clientListener.accept();
-			return true;
-		}catch(IOException e){
-			return false;
-		}	
-	}
-
-	/**
-	*Readings incoming messages and calls the dispatcher to send responses
-	*/
-	public void read() throws Exception{
-		//Read incoming messages with autoflushing printwriter
-		BufferedReader info = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
-		DataOutputStream responseStream = new DataOutputStream(incoming.getOutputStream());
-		String msg;
-
-		
-		while((msg = info.readLine()) != null){
-			System.out.println(msg);
-			//We should use some type of switch or something to figure out what function to call from the command parser
-			if(msg.indexOf(CommandParser.CMD_LON) != -1 && msg.indexOf(CommandParser.CMD_LAT) != -1){
-				//Handle the command and respond to it
-				this.dispatchResponse(this.handleGeoCommand(msg),responseStream);
-				//Force the stream to spit back to the client
-				incoming.shutdownOutput();
-				incoming = clientListener.accept();
-				responseStream = new DataOutputStream(incoming.getOutputStream());
-				
-				
-			}
-			//We can extend right here to implement more commands
-		}
-		//Close the incoming stream
-		incoming.close();
-		info.close();
-	}
-
-	/**
-	*Dispatches a response back to the client of the nearest neighbors to the point they asked for.
-	*@param neighbors The nearest zones returned by the search for the tree
-	*/
-	public void dispatchResponse(Stack<DangerNode> neighbors,DataOutputStream responseStream) throws Exception{
-		//Lets send the response as a json array of the nodes
-		JSONObject response = new JSONObject();
-		response.put("neighbors", neighbors);
-		//System.out.println(response);
-		responseStream.writeBytes(response.toString());
-		responseStream.flush();	
-	}
-
-	/**
-	*Parses a command in the GEO COMMAND format, will return the results of searching the tree for the specified coordinate and number of near zones
-	*@param geoCommand String command in the GEO COMMAND format;
-	*@return returns the results of searching the tree for the coordinate.
-	*/
-	public Stack<DangerNode> handleGeoCommand(String geoCommand){
-		float[] geoCmd = null;
-		//Parse information from the message:
-		geoCmd = CommandParser.parseGeoCommand(geoCommand);
-		if(geoCmd != null){
-			//We have recieved the Coordinates and should play with the tree
-			//System.out.println("Searching tree for " + geoCmd[0] + " " + geoCmd[1]);
-			if(dangerZones == null){
-				System.out.println("No Tree Initailized");
-				return null;
-			}
-			return dangerZones.nearestNeighbor(new float[]{geoCmd[0],geoCmd[1]},(int)geoCmd[2]);
-
-		}
-		return null;
-}
-
-	public static void main(String argv[]) throws Exception
-	{
-		DangerControl control = new DangerControl();		
-		control.run();
-
-	}
-
 }

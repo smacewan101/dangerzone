@@ -1,5 +1,7 @@
 package danger_zone;
 import java.sql.Timestamp;
+import java.sql.*;
+import javax.sql.*;
 import java.util.Stack;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,22 +10,28 @@ import java.lang.Math;
 
 /**
 *@author Ethan Eldridge <ejayeldridge @ gmail.com>
+*@author Garth Fritz <gfritz @ uvm.edu>
 *@version 0.0
 *@since 2012-10-2
 *
 * The DangerNode class is a node of a K-d Tree of dimensionality 2. It contains an id for reference to an outside database as well as
 * a timestamp identified with the time the Danger Zone took place or was entered into the database. The Node is sorted by longitude and
 * latitude which are stored in the coordinates array in their respective order.
+*
+* 
 */
 public class DangerNode{
+	private final float LAT_DUMMY = 100.0f;
+	private final float LONG_DUMMY = 200.0f;
+
 	/**
 	*Identifier corresponding to an integer database key.
 	*/
 	private int id;
 	/**
-	*Time the DangerNode took place at
+	*Time the DangerNode took place at (Unix milliseconds)
 	*/
-	private Timestamp timestamp;
+	private long timestamp;
 	/**
 	*Left child of  DangerNode node
 	*/
@@ -33,9 +41,21 @@ public class DangerNode{
 	*/
 	private DangerNode right = null;
 	/**
-	*Tuple for holding the longitude and latitude of the Danger Zone referenced by id. Indicies to the array correspond to 0 => longitude and 1=> latitude
+	*Tuple for holding the longitude and latitude of the Danger Zone referenced by id. Indicies to the array correspond to 0 => longitude and 1=> latitude.  Latitudes range [-90,90], and Longitudes range [-180,180].
 	*/
 	private float[] coordinates = new float[2];
+
+	/**
+	*Creates an DUMMY instance of the DangerNode.g
+	*/
+	public DangerNode(){
+		this.id = -1;
+		this.timestamp = -1;
+		this.left = null;
+		this.right = null;
+		this.coordinates[0] = 100.0f;
+		this.coordinates[1] = 200.0f;
+	}
 
 	/**
 	*Creates an instance of the DangerNode.g
@@ -45,6 +65,18 @@ public class DangerNode{
 	*/
 	public DangerNode(float longitude,float latitude, int id){
 		this(longitude,latitude,id,null,null);
+	}
+
+		/**
+	*Creates an instance of the DangerNode.g
+	*@param longitude The longitude coordinate of the danger zone associated with id
+	*@param latitude The latitude coordinate of the danger zone associated with id
+	*@param id The integer id for the database entry associated with the danger zone
+	*@param tStamp Timestamp in Long
+	*/
+	public DangerNode(float longitude,float latitude, int id, long tStamp){
+		this(longitude,latitude,id,null,null);
+		this.timestamp = tStamp;
 	}
 
 	/**
@@ -57,7 +89,7 @@ public class DangerNode{
 	*/
 	public DangerNode(float longitude,float latitude,int id,DangerNode lChild,DangerNode rChild){
 		this.id = id;
-		this.timestamp = new java.sql.Timestamp(System.currentTimeMillis());
+		this.timestamp = System.currentTimeMillis();
 		this.coordinates[0] = longitude;
 		this.coordinates[1] = latitude;
 		this.left = lChild;
@@ -74,7 +106,7 @@ public class DangerNode{
 	*@param rChild the right child of the DangerNode
 	*@param tStamp Timestamp in SQL Format
 	*/
-	public DangerNode(float longitude,float latitude,int id,DangerNode lChild, DangerNode rChild, java.sql.Timestamp tStamp){
+	public DangerNode(float longitude,float latitude,int id,DangerNode lChild, DangerNode rChild, long tStamp){
 		this(longitude,latitude,id,lChild,rChild);
 		this.timestamp = tStamp;
 	}
@@ -462,28 +494,147 @@ public class DangerNode{
 
 	}
 
+	/**
+	*Wrapper function that uses reBalance and a list of DangerNodes to construct a balanced KD tree.
+	*@param nodes The list of nodes to be used in constructing the balanced tree.
+	*@return The root of the newly built and balanced tree.
+	*/
+	final public static DangerNode makeTree(ArrayList<DangerNode> nodes){
+		//Check if the list is empty
+		if(nodes.isEmpty()){return null;}
+
+		DangerNode root = nodes.get(0);
+		nodes.remove(0);
+
+		//Load up a DangerNode root with the DangerNodes from the ArrayList.
+		//So we make add every node in the ArrayList to the first node in the list.
+		for (DangerNode dangernode : nodes) {
+			root.addNode(dangernode);
+		}
+
+		//Now rebalance the tree and return it.
+		return DangerNode.reBalanceTree(root);
+	}
+
+	/**
+	*Function to fetch all records
+	*@param user The username to connect to the database. From command line argument.
+	*@param password The password to connect to the database. From command line argument.
+	*@return The root of the newly built and balanced tree.
+	*/
+	static final public ArrayList<DangerNode> fetchDangers(String user, String password) throws Exception{
+		// Guide: http://www.java-samples.com/showtutorial.php?tutorialid=9
+
+		String dbUrl = "jdbc:mysql://dangerzone.cems.uvm.edu/DangerZone";
+		String dbClass = "com.mysql.jdbc.Driver";
+		String query = "SELECT * FROM tbl_danger_zone";
+
+		ArrayList<DangerNode> fetchedList = new ArrayList<DangerNode>();
+
+		try {
+
+			System.out.println("Connecting...");
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			Connection con = DriverManager.getConnection (dbUrl, user, password);
+
+			System.out.println(con);
+
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+
+			// Fetch each row from the result set.
+			//float longitude,float latitude, int id, long tStamp
+			float longitude, latitude;
+			int id;
+			long tStamp;
+
+			//Process each record.
+			while (rs.next()) {
+				// Get the data from the row using the column name
+				longitude = rs.getFloat("fld_longitude");
+				latitude = rs.getFloat("fld_latitude");
+				id = rs.getInt("pk_id");
+				tStamp = rs.getLong("fld_time_stamp");
+				//Create a DangerNode from this data
+				DangerNode node = new DangerNode(longitude,latitude,id,tStamp);
+				//Append this node to the ArrayList<DangerNode>
+				fetchedList.add(node);
+			}//end while
+
+			stmt.close();
+			con.close();
+			System.out.print("Closing connection for Tree");
+
+			return fetchedList;
+
+		}//end try
+
+		catch(ClassNotFoundException e) {
+			e.printStackTrace();
+			return fetchedList;
+		}
+
+		catch(SQLException e) {
+			e.printStackTrace();
+			return fetchedList;
+		}
+
+	}
+
 	//Test function
-	public static void main(String argv[]) throws Exception
+	public static void main(String args[]) throws Exception
 	{
-		System.out.println("Creating Tree");
-		DangerNode p = new DangerNode(9,9,1);
-		//(2,3), (5,4), (9,6), (4,7), (8,1), (7,2).
-		p.addNode(new DangerNode(7,2,4));
-		p.addNode(new DangerNode(12,12,5));
-		p.addNode(new DangerNode(15,13,6));
-		p.printTree();
-		System.out.println("Re-Balancing Tree");
-		p= DangerNode.reBalanceTree(p);
-		p.printTree();
-		float [] s = new float[2];
-		System.out.println("Nearest Neighbor Search on 13,9");
-		s[0] = 13;
-		s[1] = 9;
-		Stack<DangerNode> bests = p.nearestNeighbor(s,2);
-		System.out.println("Bests: \n"+ bests.pop() +"\n" + bests.pop());
-		p.printTree();
-		bests = p.nearestNeighbor(s,3,11);
-		System.out.println("Bests: \n"+ bests.pop() +"\n" + bests.pop());
-	}	
+		if (args.length != 2) {
+	        System.out.println("Required arguments: username password");
+	        return;
+      	}
+
+      	DangerNode d = new DangerNode();
+		
+		// ArrayList of DangerNodes to hold the nodes collected from the database.
+		// Fetch the DangerNodes
+		ArrayList<DangerNode> nodes = fetchDangers(args[0],args[1]);
+
+		System.out.println("Printing fetched nodes.");
+
+		for (int i=0; i<nodes.size(); i++){
+			//System.out.println(nodes.get(i).toString());
+
+			//Load DangerNodes from arraylist into a root DangerNode
+			d.addNode(nodes.get(i));
+		}//print out contents of nodes list
+
+		System.out.println("Printing tree before balance...");
+		d.printTree();
+
+		System.out.println("Printing tree after balance...");
+		d = DangerNode.reBalanceTree(d);
+		d.printTree();
+
+
+
+	/*
+	// 	System.out.println("Creating Tree");
+	// 	DangerNode p = new DangerNode(9,9,1);
+	// 	//(2,3), (5,4), (9,6), (4,7), (8,1), (7,2).
+	// 	p.addNode(new DangerNode(7,2,4));
+	// 	p.addNode(new DangerNode(12,12,5));
+	// 	p.addNode(new DangerNode(15,13,6));
+	// 	p.printTree();
+	// 	System.out.println("Re-Balancing Tree");
+	// 	p= DangerNode.reBalanceTree(p);
+	// 	p.printTree();
+	// 	float [] s = new float[2];
+	// 	System.out.println("Nearest Neighbor Search on 13,9");
+	// 	s[0] = 13;
+	// 	s[1] = 9;
+	// 	Stack<DangerNode> bests = p.nearestNeighbor(s,2);
+	// 	System.out.println("Bests: \n"+ bests.pop() +"\n" + bests.pop());
+	// 	p.printTree();
+	// 	bests = p.nearestNeighbor(s,3,11);
+	// 	System.out.println("Bests: \n"+ bests.pop() +"\n" + bests.pop());
+	*/
+
+	}// end main	
 
 }

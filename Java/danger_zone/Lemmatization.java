@@ -40,6 +40,7 @@ public class Lemmatization{
 		put("chos","choose"); //chosen, chose
 		put("froze","freeze"); //froze
 		put("froz","freeze"); //frozen -> froz -> freeze
+		put("shot","shoot"); //shooting -> shoot, shot -> shoot
 		put("spok","speak")	; //spoken -> spok
 		put("spoke","speak"); //spoke - > speak
 		put("stole","stolen");//stole -> stolen

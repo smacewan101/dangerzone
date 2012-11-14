@@ -37,13 +37,13 @@ public class DataSet{
 	/**
 	*Opens a connection to the database
 	*/
-	public Connection openConnection() throws Exception{
+	public Connection openConnection(String password) throws Exception{
 		java.util.Properties properties = new java.util.Properties();
-		properties.put("user","root");
-		properties.put("password","sh0wbiz1");
+		properties.put("user","cs276");
+		properties.put("password",password);
 	  	//properties.put("characterEncoding", "ISO-8859-1");
 	  	//properties.put("useUnicode", "true");
-	  	String url = "jdbc:mysql://localhost/test";
+	  	String url = "jdbc:mysql://dangerzone.cems.uvm.edu/test";
 
 	  	Class.forName("com.mysql.jdbc.Driver").newInstance();
 	  	Connection c = DriverManager.getConnection(url, properties);
@@ -69,13 +69,16 @@ public class DataSet{
 		try{
 			//Read in the data
 			while(results.next()){
-				System.out.println(results.getString(3));
-				int id = Integer.parseInt(results.getString(1));
-				String text = results.getString(3);
-				dataset.add(new Training_Tweet(id, text, NaiveBayes.convertBoolToInt(results.getBoolean(8))));
+				long id = Long.parseLong(results.getString(1));
+				String text = results.getString(5);
+
+				dataset.add(new Training_Tweet((int)id, text, NaiveBayes.convertBoolToInt(results.getBoolean(8))));
+
 			}
 		}catch(java.sql.SQLException jSQL){
 			//Do nothing
+			System.out.println(jSQL.getMessage());
+			System.out.println(jSQL.getStackTrace());
 		}finally{
 			//Cut off the results connection
 			results.close();
@@ -83,18 +86,25 @@ public class DataSet{
 		dataIter = dataset.iterator();
 	}
 
+	public void addTweet(String id, String nuId, String lat, String lon, String text, String created, String somethingelseishouldcontinueherelateron ){
+
+	}
+
+
 	/**
 	*Initalizes the data set to use the database and create an interface for the database.
 	*@return Returns true if initialization succeeded.
 	*/
-	public boolean initialize() throws Exception{
+	public boolean initialize(String password) throws Exception{
 		try{
-			con = openConnection();
+			con = openConnection(password);
 			System.out.println("connect");
 			ResultSet data = getData();
 			System.out.println("got data");
 			constructTrainingDataSet(data);	
 			System.out.println("constructed");
+			close();
+			System.out.println("Disconnecting DataSet");
 		}catch(Exception e){
 			System.out.println("Exception: ");
 			System.out.println(e.getStackTrace() + " " + e.getMessage());
@@ -103,6 +113,10 @@ public class DataSet{
 		return true;
 	}
 
+	/**
+	*Gets the next tweet in the dataset. If run out, we return null and recreate the iterator.
+	*@return the next Tweet in this dataset.
+	*/
 	public Tweet getNext(){
 		if(dataIter.hasNext()){
 			return dataIter.next();
@@ -112,12 +126,32 @@ public class DataSet{
 		}
 	}
 
+	/**
+	*Get the size of the data set
+	*/
+	public int size(){
+		return dataset.size();
+	}
+
+	public void close(){
+		try{ 
+			con.close();
+		}catch(SQLException sql){
+			System.out.println("Problem closing the connection to the database");
+		}
+	}
+
 	public static void main(String[] args) {
+		//Command line parameter of password
+		if(args.length < 1){
+			System.out.println("Required parameter: Password");
+			System.exit(1);
+		}
 		DataSet d = new DataSet();
 		try{
-			d.initialize();
-			System.out.println(d.getNext());
-			System.out.println(d.getNext());
+			d.initialize(args[0]);
+			Training_Tweet t = (Training_Tweet)d.getNext();
+			System.out.println(t.getTweetText());
 		}catch(Exception e ){
 			System.out.println("Exception");
 			System.out.println(e.getStackTrace());
