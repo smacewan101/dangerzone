@@ -12,8 +12,8 @@ import org.json.simple.JSONObject;
 
 /**
 *@author Ethan Eldridge <ejayeldridge @ gmail.com>
-*@version 0.1
-*@since 2012-10-5
+*@version 0.2
+*@since 2012-10-14
 *
 * KD Tree / Listening Object Interface for the danger zone application.
 * Uses UDP networking because it is expected that the sockets are used for interprocess communication and therefore
@@ -224,6 +224,11 @@ public class DangerControlUDP  extends DangerControl{
 			//We can extend right here to implement more commands
 	}
 
+	/**
+	*Dispatches the class response to the client.
+	*@param responseString the string to send back to the user.
+	*@param request the packet to use to figure out addresses to send back to the user.
+	*/
 	public void dispatchClassResponse(String responseString, DatagramPacket request) throws Exception{
 		JSONObject response = new JSONObject();
 		response.put("Response", responseString);
@@ -234,22 +239,6 @@ public class DangerControlUDP  extends DangerControl{
 	    clientListener.send(reply);
 	}
 
-	/**
-	*Classifies the tweet from the passed in line using the classifier.
-	*@param line The line to be classified
-	*@result Returns a D or S depending on the category the line is classified into, or an empty string if the category is not recognized.
-	*/
-	public String handleClassify(String line){
-		int cat = classifier.classify(line);
-		switch(cat){
-			case NaiveBayes.CAT_DANGER:
-				return "D";
-			case NaiveBayes.CAT_SAFE:
-				return "S";
-			default:
-				return "";
-		}
-	}
 
 	/**
 	*Dispatches a response back to the client of the nearest neighbors to the point they asked for.

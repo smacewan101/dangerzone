@@ -68,4 +68,21 @@ public abstract class DangerControl{
 	public abstract Stack<DangerNode> handleGeoCommand(String geoCommand);
 	public abstract void dispatchResponse(Stack<DangerNode> neighbors,DataOutputStream responseStream) throws Exception;
 	public abstract void handleLine(String line,DataOutputStream request);
+
+	/**
+	*Classifies the tweet from the passed in line using the classifier.
+	*@param line The line to be classified
+	*@result Returns a D or S depending on the category the line is classified into, or an empty string if the category is not recognized.
+	*/
+	public String handleClassify(String line){
+		int cat = classifier.classify(line);
+		switch(cat){
+			case NaiveBayes.CAT_DANGER:
+				return "D";
+			case NaiveBayes.CAT_SAFE:
+				return "S";
+			default:
+				return "";
+		}
+	}
 }

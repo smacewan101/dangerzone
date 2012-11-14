@@ -203,8 +203,36 @@ public class DangerControlTCP extends DangerControl{
 				System.out.println("Recieved Kill Code");
 				DangerControl.continous = false;
 				long_timeout = 0;
+			}else if(line.indexOf(CommandParser.CMD_CLASSIFY)!=-1){
+				//Handle the classification
+				String cat = this.handleClassify(CommandParser.parseClassifyCommand(line));
+				try{ 	
+					if(cat.equals("D")){
+						this.dispatchClassResponse("Dangerous",request);
+					}else if(cat.equals("S")){
+						this.dispatchClassResponse("Safe",request);
+					}else{
+						this.dispatchClassResponse("Ill formed request",request);
+					}
+				}catch(Exception e){
+					System.out.println("Error handling Classification Command: \"" + line + "\" is not properly formed");
+					System.out.println(e.getMessage());	
+				}
 			}
 			//We can extend right here to implement more commands
+	}
+
+	/**
+	*Dispatches the class response to the client.
+	*@param responseString the string to send back to the user.
+	*@param request the packet to use to figure out addresses to send back to the user.
+	*/
+	public void dispatchClassResponse(String responseString, DataOutputStream responseStream) throws Exception{
+		JSONObject response = new JSONObject();
+		response.put("Response", responseString);
+		
+		responseStream.writeBytes(response.toString()+"\0");
+		responseStream.flush();	
 	}
 
 	/**
