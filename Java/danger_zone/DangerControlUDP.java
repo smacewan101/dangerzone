@@ -211,7 +211,7 @@ public class DangerControlUDP  extends DangerControl{
 				try{ 	
 					if(cat.equals("D")){
 						this.dispatchClassResponse("Dangerous",request);
-					else if(cat.equals("S")){
+					}else if(cat.equals("S")){
 						this.dispatchClassResponse("Safe",request);
 					}else{
 						this.dispatchClassResponse("Ill formed request",request);
