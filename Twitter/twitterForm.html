@@ -2,13 +2,17 @@
 <head>
 	<title>Twitter Search Form</title>
 	<style type="text/css">
-		div{width:16%;}
+		div{width:17%;
+			border:1px solid black;
+			padding: 1em;}
 		input.text{float:right;}
 		label{line-height:170%}
 	</style>
 </head>
 <body>
-
+<p>
+	QUERY USING GENERIC TWITTER SEARCH
+</p>
 <form action="twitterSearch.php" method="post">
 	<div>
 		<label for="keywords">Keywords:</label><input class ="text" type="text" name="keywords"/>
@@ -27,5 +31,21 @@
 		<input type="submit"/>
 	</div>
 </form>
+
+<p>
+	OR QUERY BY USER_ID
+</p>
+
+<form action="twitterSearch.php" method="post">
+	<div>
+		<label for="username">User Name:</label><input class ="text" type="text" name="username"/>
+		<br />
+		<input type="radio" name="type" value="name" checked="true">Name</option>
+		<input type="radio" name="type" value="id">ID</opiton>
+		<br />
+		<input type="submit"/>
+	</div>
+</form>
+
 </body>
 </html>

@@ -1,12 +1,21 @@
 <?php
+require_once('/tmhOAuth/tmhOAuth.php');
 
 	class TwitterQuery{
-
+		
 		public $search;
 		private $keywords;
 		private $lang;
 		private $rpp;
 		private $geo;
+
+
+		//twitter keys used to use a GET request with twitter
+		private $connection_data = array(
+		'consumer_key' => '0ZpaqIc5dIdQEEtaUYf7wQ',
+		'consumer_private_key' => 'R275pd4ps5zYJX4WAWTZcgDx65wxQ2UrTHREguzILAY',
+		'access_token' => '825797034-jE7LzZOXrEo7VvsN9i0I6zzeBCNaxXbFhPGoY3Xt',
+		'access_secret_token'=> 'VXugw7vMlMJM8EpchD4sl7XkdpaOF1bJFGlR7Ei60');
 
 
 		//set some default search parameters
@@ -60,17 +69,44 @@
 				}
 				curl_close( $curl );
 				return $return;
+			}else{ 
+				echo "<p> No Search Was Given.</p>";
+				return '-1';
 			}
-			else echo "<p> No Search Was Given.</p>";
 		}
-
 
 
 		//construct the search string to be used to query twiiter for tweets
 		public function constructSearch(){
 			$searchParams = array($this->keywords, $this->geo, $this->lang, $this->rpp);
 			$this->search = implode('&',$searchParams);
-			echo $this->search;
+		}
+
+		//grabs all the recent tweets from a specific user by their username on twitter
+		//INPUT:  user_name as a string
+		//OUTPUT: array of all the tweets returned my twitter
+		public function getUserTimelineByName($user_name){
+			$authenticate = new tmhOAuth($this->connection_data);
+			$url = '1/statuses/user_timeline';
+			$authenticate->request('GET', $authenticate->url($url), array('screen_name'=>$user_name));
+			$response = json_decode($authenticate->response['response'], false);
+			if(array_key_exists('errors', $response)){
+				return $response->errors[0]->code;
+			}else{
+				return $response;
+			}			
+		}
+
+		public function getUserTimelineByID($user_id){
+			$authenticate = new tmhOAuth($this->connection_data);
+			$url = '1/statuses/user_timeline';
+			$authenticate->request('GET', $authenticate->url($url), array('user_id'=>$user_id));
+			$response = json_decode($authenticate->response['response'], false);
+			if(array_key_exists('errors', $response)){
+				return $response->errors[0]->code;
+			}else{
+				return $response;
+			}			
 		}
 
 		/*
