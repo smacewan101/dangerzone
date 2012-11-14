@@ -20,7 +20,7 @@ $port = 0;
 socket_recvfrom($socketHandle, $response, 512, 0, $from, $port);
 echo $response . '<br />';
 
-
+/*
 $message = "CLASSIFY Gunshots in Syria";
 echo 'MESSAGE: ' . $message . '<br />';
 socket_sendto($socketHandle, $message, strlen($message), MSG_EOF, $serverIP, $serverSendPort);
@@ -30,7 +30,7 @@ $from = "";
 $port = 0;
 socket_recvfrom($socketHandle, $response, 512, 0, $from, $port);
 echo $response . '<br />';
-
+*/
 $message = 'KILLSERVER0x0000';
 echo 'MESSAGE: ' . $message . '<br />';
 socket_sendto($socketHandle, $message, strlen($message), MSG_EOF, $serverIP, $serverSendPort);

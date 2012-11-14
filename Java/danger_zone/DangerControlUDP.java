@@ -209,16 +209,12 @@ public class DangerControlUDP  extends DangerControl{
 				//Handle the classification
 				String cat = this.handleClassify(CommandParser.parseClassifyCommand(line));
 				try{ 	
-					switch(cat){
-						case "D":
-							this.dispatchClassResponse("Dangerous",request);
-							break;
-						case "S":
-							this.dispatchClassResponse("Safe",request);
-							break;
-						default:
-							this.dispatchClassResponse("Ill formed request",request);
-							break;
+					if(cat.equals("D")){
+						this.dispatchClassResponse("Dangerous",request);
+					else if(cat.equals("S")){
+						this.dispatchClassResponse("Safe",request);
+					}else{
+						this.dispatchClassResponse("Ill formed request",request);
 					}
 				}catch(Exception e){
 					System.out.println("Error handling Classification Command: \"" + line + "\" is not properly formed");
